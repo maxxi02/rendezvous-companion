@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="rendezvous_companion.Pages.PrinterSettingsPage"
+             Title="Printer Settings"
+             BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#121212}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="24">
+
+            <!-- Store Info -->
+            <Border StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}" Padding="20">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Store Information" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+                    <Label Text="This information appears on your printed receipts." FontSize="14" TextColor="{StaticResource Gray500}" Margin="0,-8,0,0"/>
+
+                    <VerticalStackLayout Spacing="12">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Store Name" FontSize="12" FontAttributes="Bold" TextColor="#404040" />
+                            <Entry x:Name="StoreNameEntry" Placeholder="e.g. RENDEZVOUS" Text="RENDEZVOUS" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Store Address" FontSize="12" FontAttributes="Bold" TextColor="#404040" />
+                            <Entry x:Name="StoreAddressEntry" Placeholder="e.g. 123 Main St, City" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Phone Number" FontSize="12" FontAttributes="Bold" TextColor="#404040" />
+                            <Entry x:Name="StoreTelEntry" Placeholder="e.g. +63 912 345 6789" />
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+
+                    <Button Text="Update Store Info"
+                            Clicked="OnSaveStoreInfoClicked"
+                            BackgroundColor="#404040"
+                            TextColor="White"
+                            CornerRadius="8"
+                            HeightRequest="44"
+                            FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Bluetooth Scan -->
+            <Border StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}" Padding="20">
+                <VerticalStackLayout Spacing="16">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <VerticalStackLayout>
+                            <Label Text="Bluetooth Printers" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+                            <Label Text="Scan for nearby Classic Bluetooth printers." FontSize="14" TextColor="{StaticResource Gray500}" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="1"
+                                Text="Scan"
+                                Clicked="OnScanBluetoothClicked"
+                                BackgroundColor="{StaticResource Primary}"
+                                TextColor="#FFFFFF"
+                                CornerRadius="8"
+                                WidthRequest="80"
+                                HeightRequest="40"
+                                FontAttributes="Bold" />
+                    </Grid>
+
+                    <ActivityIndicator x:Name="BtScanIndicator" IsVisible="False" IsRunning="False" Color="{StaticResource Primary}" HeightRequest="30" />
+                    <Label x:Name="BtScanStatusLabel" Text="" TextColor="{StaticResource Gray500}" FontSize="13" HorizontalTextAlignment="Center" />
+
+                    <CollectionView x:Name="BluetoothDevicesList" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border StrokeShape="RoundRectangle 8" StrokeThickness="1" Stroke="{AppThemeBinding Light=#C8C8C8, Dark=#404040}" Padding="12" Margin="0,6" BackgroundColor="{AppThemeBinding Light=#E1E1E1, Dark=#2C2C2C}">
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource Gray900}" />
+                                            <Label Text="{Binding Id}" FontSize="12" TextColor="#404040" FontFamily="Monospace" />
+                                            <HorizontalStackLayout Spacing="6" Margin="0,4,0,0">
+                                                <Border StrokeShape="RoundRectangle 4" BackgroundColor="{StaticResource Primary}" Padding="6,2">
+                                                    <Label Text="BLUETOOTH" FontSize="10" FontAttributes="Bold" TextColor="White" />
+                                                </Border>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+                                        <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                                            <Button Text="Receipt"
+                                                    CommandParameter="{Binding .}"
+                                                    Clicked="OnAssignReceiptClicked"
+                                                    BackgroundColor="#28a745"
+                                                    TextColor="White"
+                                                    CornerRadius="6"
+                                                    FontSize="12"
+                                                    FontAttributes="Bold"
+                                                    Padding="12,6" />
+                                            <Button Text="Kitchen"
+                                                    CommandParameter="{Binding .}"
+                                                    Clicked="OnAssignKitchenClicked"
+                                                    BackgroundColor="#fd7e14"
+                                                    TextColor="White"
+                                                    CornerRadius="6"
+                                                    FontSize="12"
+                                                    FontAttributes="Bold"
+                                                    Padding="12,6" />
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- USB Scan -->
+            <Border StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}" Padding="20">
+                <VerticalStackLayout Spacing="16">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <VerticalStackLayout>
+                            <Label Text="USB Printers" FontSize="20" FontAttributes="Bold" TextColor="#198754" />
+                            <Label Text="Connect your printer via USB OTG cable." FontSize="14" TextColor="{StaticResource Gray500}" />
+                        </VerticalStackLayout>
+                        <Button Grid.Column="1"
+                                Text="Scan"
+                                Clicked="OnScanUsbClicked"
+                                BackgroundColor="#198754"
+                                TextColor="White"
+                                CornerRadius="8"
+                                WidthRequest="80"
+                                HeightRequest="40"
+                                FontAttributes="Bold" />
+                    </Grid>
+
+                    <ActivityIndicator x:Name="UsbScanIndicator" IsVisible="False" IsRunning="False" Color="#198754" HeightRequest="30" />
+                    <Label x:Name="UsbScanStatusLabel" Text="" TextColor="{StaticResource Gray500}" FontSize="13" HorizontalTextAlignment="Center" />
+
+                    <CollectionView x:Name="UsbDevicesList" SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border StrokeShape="RoundRectangle 8" StrokeThickness="1" Stroke="{AppThemeBinding Light=#C8C8C8, Dark=#404040}" Padding="12" Margin="0,6" BackgroundColor="{AppThemeBinding Light=#E1E1E1, Dark=#2C2C2C}">
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                            <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource Gray900}" />
+                                            <Label Text="{Binding Id}" FontSize="12" TextColor="#404040" FontFamily="Monospace" />
+                                            <HorizontalStackLayout Spacing="6" Margin="0,4,0,0">
+                                                <Border StrokeShape="RoundRectangle 4" BackgroundColor="#198754" Padding="6,2">
+                                                    <Label Text="USB" FontSize="10" FontAttributes="Bold" TextColor="White" />
+                                                </Border>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+                                        <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                                            <Button Text="Receipt"
+                                                    CommandParameter="{Binding .}"
+                                                    Clicked="OnAssignReceiptClicked"
+                                                    BackgroundColor="#28a745"
+                                                    TextColor="White"
+                                                    CornerRadius="6"
+                                                    FontSize="12"
+                                                    FontAttributes="Bold"
+                                                    Padding="12,6" />
+                                            <Button Text="Kitchen"
+                                                    CommandParameter="{Binding .}"
+                                                    Clicked="OnAssignKitchenClicked"
+                                                    BackgroundColor="#fd7e14"
+                                                    TextColor="White"
+                                                    CornerRadius="6"
+                                                    FontSize="12"
+                                                    FontAttributes="Bold"
+                                                    Padding="12,6" />
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Role Summary -->
+            <Border StrokeShape="RoundRectangle 12" StrokeThickness="2" Stroke="{StaticResource Primary}" BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}" Padding="20">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Current Assignments" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource Primary}" />
+
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                        <!-- Receipt Printer -->
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 8" StrokeThickness="1" Stroke="#28a745" Padding="12" BackgroundColor="{AppThemeBinding Light=#F0F9F1, Dark=#0F2D15}">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="RECEIPT" FontAttributes="Bold" TextColor="#28a745" FontSize="12" HorizontalTextAlignment="Center" />
+                                <Label x:Name="ReceiptRoleLabel" Text="Not assigned" TextColor="Red" FontSize="13" HorizontalTextAlignment="Center" MaxLines="2" LineBreakMode="TailTruncation" HeightRequest="40" />
+                                <Button x:Name="TestReceiptButton"
+                                        Text="Test Print"
+                                        Clicked="OnTestReceiptClicked"
+                                        BackgroundColor="#17a2b8"
+                                        TextColor="White"
+                                        CornerRadius="6"
+                                        FontSize="11"
+                                        Padding="4"
+                                        IsEnabled="False" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Kitchen Printer -->
+                        <Border Grid.Column="1" StrokeShape="RoundRectangle 8" StrokeThickness="1" Stroke="#fd7e14" Padding="12" BackgroundColor="{AppThemeBinding Light=#FFF5EB, Dark=#2D1A0F}">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="KITCHEN" FontAttributes="Bold" TextColor="#fd7e14" FontSize="12" HorizontalTextAlignment="Center" />
+                                <Label x:Name="KitchenRoleLabel" Text="Not assigned" TextColor="Red" FontSize="13" HorizontalTextAlignment="Center" MaxLines="2" LineBreakMode="TailTruncation" HeightRequest="40" />
+                                <Button x:Name="TestKitchenButton"
+                                        Text="Test Print"
+                                        Clicked="OnTestKitchenClicked"
+                                        BackgroundColor="#17a2b8"
+                                        TextColor="White"
+                                        CornerRadius="6"
+                                        FontSize="11"
+                                        Padding="4"
+                                        IsEnabled="False" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

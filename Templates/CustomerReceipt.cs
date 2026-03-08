@@ -1,0 +1,83 @@
+using rendezvous_companion.Models;
+using static rendezvous_companion.Templates.EscPosCommands;
+
+namespace rendezvous_companion.Templates;
+
+public static class CustomerReceipt
+{
+    public static byte[] Build(Order order, string storeName = "RENDEZVOUS", string storeAddress = "", string storeTel = "")
+    {
+        var parts = new List<byte[]>
+        {
+            // Initialize printer
+            Initialize,
+
+            // Store header
+            AlignCenter,
+            BoldOn,
+            LargeFontOn,
+            Line(storeName),
+            NormalFont,
+            BoldOff,
+        };
+
+        if (!string.IsNullOrEmpty(storeAddress))
+            parts.Add(Line(storeAddress));
+
+        if (!string.IsNullOrEmpty(storeTel))
+            parts.Add(Line($"Tel: {storeTel}"));
+
+        parts.AddRange(new[]
+        {
+            NewLine,
+            AlignLeft,
+            Divider(),
+
+            // Order info
+            Line($"Order #: {order.OrderNumber}"),
+            Line($"Date   : {order.OrderDate:MM/dd/yyyy h:mm tt}"),
+            Line($"Table  : {order.TableNumber}"),
+        });
+
+        if (!string.IsNullOrEmpty(order.CustomerName))
+            parts.Add(Line($"Name   : {order.CustomerName}"));
+
+        parts.Add(Divider());
+
+        // Order items
+        foreach (var item in order.Items)
+            parts.Add(OrderItemLine(item.Name, item.Quantity, item.Total));
+
+        parts.AddRange(new[]
+        {
+            Divider(),
+
+            // Totals
+            TotalLine("Subtotal", order.Subtotal),
+            TotalLine("VAT (12%)", order.Tax),
+            BoldOn,
+            TotalLine("TOTAL", order.Total),
+            BoldOff,
+            NewLine,
+            TotalLine($"Cash ({order.PaymentMethod})", order.CashReceived),
+            TotalLine("Change", order.Change),
+
+            Divider(),
+
+            // Footer
+            AlignCenter,
+            NewLine,
+            Line("Thank you for dining with us!"),
+            Line("Please come again :)"),
+            NewLine,
+            Line($"VAT Reg TIN: 000-000-000-000"),
+            NewLine,
+
+            // Feed and cut
+            FeedLines3,
+            CutPaper
+        });
+
+        return Combine(parts.ToArray());
+    }
+}

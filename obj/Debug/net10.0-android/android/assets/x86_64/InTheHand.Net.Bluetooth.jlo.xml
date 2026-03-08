@@ -1,0 +1,33 @@
+<api>
+  <jcw-types>
+    <type name="BluetoothUuidReceiver" package="crc64b9ff3938fde5bc74" application_java_class="android.app.Application" mono_runtime_initialization="mono.MonoPackageManager.LoadApplication (context);" extends_type="android.content.BroadcastReceiver" partial_assembly_qualified_name="InTheHand.Net.Bluetooth.BluetoothUuidReceiver, InTheHand.Net.Bluetooth">
+      <constructors>
+        <constructor name="BluetoothUuidReceiver" method="n_.ctor:()V:" jni_signature="()V" managed_parameters="" retval="void" is_dynamically_registered="True" />
+      </constructors>
+      <methods>
+        <method name="onReceive" method="n_onReceive:(Landroid/content/Context;Landroid/content/Intent;)V:GetOnReceive_Landroid_content_Context_Landroid_content_Intent_Handler" jni_signature="(Landroid/content/Context;Landroid/content/Intent;)V" params="android.content.Context p0, android.content.Intent p1" retval="void" is_dynamically_registered="True" super_call="p0, p1" activate_call="p0, p1" />
+      </methods>
+    </type>
+    <type name="BluetoothDevicePickerReceiver" package="crc64881974363b014be5" application_java_class="android.app.Application" mono_runtime_initialization="mono.MonoPackageManager.LoadApplication (context);" extends_type="android.content.BroadcastReceiver" partial_assembly_qualified_name="InTheHand.Net.Bluetooth.Droid.BluetoothDevicePickerReceiver, InTheHand.Net.Bluetooth">
+      <constructors>
+        <constructor name="BluetoothDevicePickerReceiver" method="n_.ctor:()V:" jni_signature="()V" managed_parameters="" retval="void" is_dynamically_registered="True" />
+      </constructors>
+      <methods>
+        <method name="onReceive" method="n_onReceive:(Landroid/content/Context;Landroid/content/Intent;)V:GetOnReceive_Landroid_content_Context_Landroid_content_Intent_Handler" jni_signature="(Landroid/content/Context;Landroid/content/Intent;)V" params="android.content.Context p0, android.content.Intent p1" retval="void" is_dynamically_registered="True" super_call="p0, p1" activate_call="p0, p1" />
+      </methods>
+    </type>
+    <type name="BluetoothDiscoveryReceiver" package="crc64881974363b014be5" application_java_class="android.app.Application" mono_runtime_initialization="mono.MonoPackageManager.LoadApplication (context);" extends_type="android.content.BroadcastReceiver" partial_assembly_qualified_name="InTheHand.Net.Bluetooth.Droid.BluetoothDiscoveryReceiver, InTheHand.Net.Bluetooth">
+      <constructors>
+        <constructor name="BluetoothDiscoveryReceiver" method="n_.ctor:()V:" jni_signature="()V" managed_parameters="" retval="void" is_dynamically_registered="True" />
+      </constructors>
+      <methods>
+        <method name="onReceive" method="n_onReceive:(Landroid/content/Context;Landroid/content/Intent;)V:GetOnReceive_Landroid_content_Context_Landroid_content_Intent_Handler" jni_signature="(Landroid/content/Context;Landroid/content/Intent;)V" params="android.content.Context p0, android.content.Intent p1" retval="void" is_dynamically_registered="True" super_call="p0, p1" activate_call="p0, p1" />
+      </methods>
+    </type>
+  </jcw-types>
+  <acw-types partial-assembly-name="InTheHand.Net.Bluetooth" module-name="InTheHand.Net.Bluetooth.dll">
+    <type assembly-qualified-name="InTheHand.Net.Bluetooth.BluetoothUuidReceiver, InTheHand.Net.Bluetooth, Version=4.2.3.0, Culture=neutral, PublicKeyToken=ea38caa273134499" compat-jni-name="inthehand.net.bluetooth.BluetoothUuidReceiver" java-key="crc64b9ff3938fde5bc74.BluetoothUuidReceiver" managed-key="InTheHand.Net.Bluetooth.BluetoothUuidReceiver" partial-assembly-qualified-name="InTheHand.Net.Bluetooth.BluetoothUuidReceiver, InTheHand.Net.Bluetooth" />
+    <type assembly-qualified-name="InTheHand.Net.Bluetooth.Droid.BluetoothDevicePickerReceiver, InTheHand.Net.Bluetooth, Version=4.2.3.0, Culture=neutral, PublicKeyToken=ea38caa273134499" compat-jni-name="inthehand.net.bluetooth.droid.BluetoothDevicePickerReceiver" java-key="crc64881974363b014be5.BluetoothDevicePickerReceiver" managed-key="InTheHand.Net.Bluetooth.Droid.BluetoothDevicePickerReceiver" partial-assembly-qualified-name="InTheHand.Net.Bluetooth.Droid.BluetoothDevicePickerReceiver, InTheHand.Net.Bluetooth" />
+    <type assembly-qualified-name="InTheHand.Net.Bluetooth.Droid.BluetoothDiscoveryReceiver, InTheHand.Net.Bluetooth, Version=4.2.3.0, Culture=neutral, PublicKeyToken=ea38caa273134499" compat-jni-name="inthehand.net.bluetooth.droid.BluetoothDiscoveryReceiver" java-key="crc64881974363b014be5.BluetoothDiscoveryReceiver" managed-key="InTheHand.Net.Bluetooth.Droid.BluetoothDiscoveryReceiver" partial-assembly-qualified-name="InTheHand.Net.Bluetooth.Droid.BluetoothDiscoveryReceiver, InTheHand.Net.Bluetooth" />
+  </acw-types>
+</api>

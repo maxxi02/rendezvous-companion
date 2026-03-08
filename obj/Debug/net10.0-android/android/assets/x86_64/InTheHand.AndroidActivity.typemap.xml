@@ -1,0 +1,8 @@
+<api type="debug" assembly-name="InTheHand.AndroidActivity" mvid="b2692982d7464a89b414443b42824ca5">
+  <java-to-managed>
+    <entry java-name="crc64d920ea3f4476b6f9/ActivityLifecycleCallbacks" managed-name="InTheHand.ActivityLifecycleCallbacks, InTheHand.AndroidActivity" managed-type-token-id="33554436" />
+  </java-to-managed>
+  <managed-to-java>
+    <entry java-name="crc64d920ea3f4476b6f9/ActivityLifecycleCallbacks" managed-name="InTheHand.ActivityLifecycleCallbacks, InTheHand.AndroidActivity" managed-type-token-id="33554436" />
+  </managed-to-java>
+</api>
