@@ -5,8 +5,12 @@ namespace rendezvous_companion.Templates;
 
 public static class CustomerReceipt
 {
-    public static byte[] Build(Order order, string storeName = "RENDEZVOUS", string storeAddress = "", string storeTel = "")
+    public static byte[] Build(Order order)
     {
+        var storeName = !string.IsNullOrEmpty(order.BusinessName) ? order.BusinessName : "RENDEZVOUS";
+        var storeAddress = order.BusinessAddress;
+        var storeTel = order.BusinessPhone;
+        var receiptMessage = order.ReceiptMessage;
         var parts = new List<byte[]>
         {
             // Initialize printer
@@ -71,7 +75,7 @@ public static class CustomerReceipt
             // Footer
             AlignCenter,
             NewLine,
-            Line("Thank you for dining with us!"),
+            !string.IsNullOrEmpty(receiptMessage) ? Line(receiptMessage) : Line("Thank you for dining with us!"),
             Line("Please come again :)"),
             NewLine,
             Line($"VAT Reg TIN: 000-000-000-000"),

@@ -1,21 +1,21 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Aeron\\OneDrive\\Desktop\\PASSOCON\\Solarworks Project\\rendezvous-companion\\rendezvous_companion.csproj": {}
+    "C:\\dev\\solarworks-projects\\rendezvous_companion\\rendezvous_companion.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Aeron\\OneDrive\\Desktop\\PASSOCON\\Solarworks Project\\rendezvous-companion\\rendezvous_companion.csproj": {
+    "C:\\dev\\solarworks-projects\\rendezvous_companion\\rendezvous_companion.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Aeron\\OneDrive\\Desktop\\PASSOCON\\Solarworks Project\\rendezvous-companion\\rendezvous_companion.csproj",
+        "projectUniqueName": "C:\\dev\\solarworks-projects\\rendezvous_companion\\rendezvous_companion.csproj",
         "projectName": "rendezvous_companion",
-        "projectPath": "C:\\Users\\Aeron\\OneDrive\\Desktop\\PASSOCON\\Solarworks Project\\rendezvous-companion\\rendezvous_companion.csproj",
-        "packagesPath": "C:\\Users\\Aeron\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Aeron\\OneDrive\\Desktop\\PASSOCON\\Solarworks Project\\rendezvous-companion\\obj\\",
+        "projectPath": "C:\\dev\\solarworks-projects\\rendezvous_companion\\rendezvous_companion.csproj",
+        "packagesPath": "C:\\Users\\proja\\.nuget\\packages\\",
+        "outputPath": "C:\\dev\\solarworks-projects\\rendezvous_companion\\obj\\",
         "projectStyle": "PackageReference",
         "crossTargeting": true,
         "configFilePaths": [
-          "C:\\Users\\Aeron\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\proja\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0-android",
@@ -1112,24 +1112,8 @@
           "warn": true,
           "downloadDependencies": [
             {
-              "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
-              "version": "[10.0.3, 10.0.3]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Crossgen2.win-x64",
-              "version": "[10.0.3, 10.0.3]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Runtime.win-x64",
-              "version": "[10.0.3, 10.0.3]"
-            },
-            {
               "name": "Microsoft.Windows.SDK.NET.Ref",
               "version": "[10.0.19041.57, 10.0.19041.57]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
-              "version": "[10.0.3, 10.0.3]"
             }
           ],
           "frameworkReferences": {
@@ -1424,10 +1408,7 @@
         "android-x64": {
           "#import": []
         },
-        "ios-arm64": {
-          "#import": []
-        },
-        "maccatalyst-arm64": {
+        "iossimulator-x64": {
           "#import": []
         },
         "maccatalyst-x64": {

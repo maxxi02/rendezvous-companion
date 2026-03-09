@@ -96,7 +96,7 @@ public class PrintManager
         // Print customer receipt
         if (_receiptPrinter?.IsConnected == true)
         {
-            var receiptData = CustomerReceipt.Build(order, StoreName, StoreAddress, StoreTel);
+            var receiptData = CustomerReceipt.Build(order);
             receiptOk = await _receiptPrinter.PrintAsync(receiptData);
         }
 
@@ -172,7 +172,7 @@ public class PrintManager
     public async Task<bool> PrintReceiptAsync(Order order)
     {
         if (_receiptPrinter?.IsConnected != true) return false;
-        var data = CustomerReceipt.Build(order, StoreName, StoreAddress, StoreTel);
+        var data = CustomerReceipt.Build(order);
         return await _receiptPrinter.PrintAsync(data);
     }
 

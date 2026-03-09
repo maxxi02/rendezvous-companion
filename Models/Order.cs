@@ -55,6 +55,19 @@ public class Order
 
     [JsonPropertyName("seniorPwdCount")]
     public int? SeniorPwdCount { get; set; }
+
+    // Store Info (Database-driven from POS)
+    [JsonPropertyName("businessName")]
+    public string BusinessName { get; set; } = string.Empty;
+
+    [JsonPropertyName("businessAddress")]
+    public string BusinessAddress { get; set; } = string.Empty;
+
+    [JsonPropertyName("businessPhone")]
+    public string BusinessPhone { get; set; } = string.Empty;
+
+    [JsonPropertyName("receiptMessage")]
+    public string ReceiptMessage { get; set; } = string.Empty;
     
     // Queue
     [JsonPropertyName("queueStatus")]
