@@ -202,14 +202,14 @@ public partial class PrinterSettingsPage : ContentPage
     {
         OrderNumber = "TEST-001",
         OrderDate = DateTime.Now,
-        TableNumber = 1,
+        TableNumber = "1",
         CustomerName = "Test Customer",
-        CashReceived = 500,
+        AmountPaid = 500,
         Items = new List<OrderItem>
         {
-            new() { Name = "Burger", Quantity = 1, UnitPrice = 150, Notes = "No onions" },
-            new() { Name = "Fries", Quantity = 2, UnitPrice = 60 },
-            new() { Name = "Iced Tea", Quantity = 1, UnitPrice = 55, Notes = "Less sugar" }
+            new() { Name = "Burger", Quantity = 1, Price = 150, Notes = "No onions" },
+            new() { Name = "Fries", Quantity = 2, Price = 60 },
+            new() { Name = "Iced Tea", Quantity = 1, Price = 55, Notes = "Less sugar" }
         }
     };
 }

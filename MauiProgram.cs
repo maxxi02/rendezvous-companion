@@ -20,6 +20,8 @@ public static class MauiProgram
             });
         builder.Services.AddSingleton<App>();
         builder.Services.AddSingleton<PrintManager>();
+        builder.Services.AddSingleton<SocketService>();
+        builder.Services.AddTransient<OrdersPage>();
         builder.Services.AddTransient<PrinterSettingsPage>();
 
 #if DEBUG

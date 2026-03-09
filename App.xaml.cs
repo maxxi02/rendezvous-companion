@@ -5,11 +5,13 @@ namespace rendezvous_companion;
 
 public partial class App : Application
 {
-    public App(IServiceProvider serviceProvider)
+    public App()
     {
         InitializeComponent();
-        
-        var page = serviceProvider.GetRequiredService<PrinterSettingsPage>();
-        MainPage = new NavigationPage(page);
+    }
+
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        return new Window(new AppShell());
     }
 }

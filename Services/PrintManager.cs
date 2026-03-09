@@ -53,7 +53,11 @@ public class PrintManager
     {
         _receiptPrinter = CreateService(device);
         var connected = await _receiptPrinter.ConnectAsync(device.Id);
-        if (connected) ReceiptPrinterDevice = device;
+        if (connected)
+        {
+            ReceiptPrinterDevice = device;
+            _ = ReportStatus();
+        }
         return connected;
     }
 
@@ -64,8 +68,21 @@ public class PrintManager
     {
         _kitchenPrinter = CreateService(device);
         var connected = await _kitchenPrinter.ConnectAsync(device.Id);
-        if (connected) KitchenPrinterDevice = device;
+        if (connected)
+        {
+            KitchenPrinterDevice = device;
+            _ = ReportStatus();
+        }
         return connected;
+    }
+
+    private async Task ReportStatus()
+    {
+        var socketService = App.Current?.Handler.MauiContext?.Services.GetService<SocketService>();
+        if (socketService != null)
+        {
+            await socketService.ReportPrinterStatusAsync(IsReceiptPrinterConnected, IsKitchenPrinterConnected);
+        }
     }
 
     /// <summary>
@@ -125,6 +142,7 @@ public class PrintManager
     {
         if (_receiptPrinter != null) await _receiptPrinter.DisconnectAsync();
         if (_kitchenPrinter != null) await _kitchenPrinter.DisconnectAsync();
+        _ = ReportStatus();
     }
 
     private IPrinterService CreateService(PrinterDevice device)

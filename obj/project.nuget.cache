@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "euWGxHFy+rU=",
+  "dgSpecHash": "tP+eYSne5gs=",
   "success": true,
   "projectFilePath": "C:\\dev\\solarworks-projects\\rendezvous_companion\\rendezvous_companion.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\proja\\.nuget\\packages\\communitytoolkit.mvvm\\8.4.0\\communitytoolkit.mvvm.8.4.0.nupkg.sha512",
     "C:\\Users\\proja\\.nuget\\packages\\googlegson\\2.13.1.1\\googlegson.2.13.1.1.nupkg.sha512",
     "C:\\Users\\proja\\.nuget\\packages\\inthehand.androidactivity\\1.0.4\\inthehand.androidactivity.1.0.4.nupkg.sha512",
     "C:\\Users\\proja\\.nuget\\packages\\inthehand.net.bluetooth\\4.2.3\\inthehand.net.bluetooth.4.2.3.nupkg.sha512",
@@ -53,6 +54,10 @@
     "C:\\Users\\proja\\.nuget\\packages\\runtime.native.system.io.ports\\10.0.3\\runtime.native.system.io.ports.10.0.3.nupkg.sha512",
     "C:\\Users\\proja\\.nuget\\packages\\runtime.osx-arm64.runtime.native.system.io.ports\\10.0.3\\runtime.osx-arm64.runtime.native.system.io.ports.10.0.3.nupkg.sha512",
     "C:\\Users\\proja\\.nuget\\packages\\runtime.osx-x64.runtime.native.system.io.ports\\10.0.3\\runtime.osx-x64.runtime.native.system.io.ports.10.0.3.nupkg.sha512",
+    "C:\\Users\\proja\\.nuget\\packages\\socketio.core\\3.1.2\\socketio.core.3.1.2.nupkg.sha512",
+    "C:\\Users\\proja\\.nuget\\packages\\socketio.serializer.core\\3.1.2\\socketio.serializer.core.3.1.2.nupkg.sha512",
+    "C:\\Users\\proja\\.nuget\\packages\\socketio.serializer.systemtextjson\\3.1.2\\socketio.serializer.systemtextjson.3.1.2.nupkg.sha512",
+    "C:\\Users\\proja\\.nuget\\packages\\socketioclient\\3.1.2\\socketioclient.3.1.2.nupkg.sha512",
     "C:\\Users\\proja\\.nuget\\packages\\system.io.ports\\10.0.3\\system.io.ports.10.0.3.nupkg.sha512",
     "C:\\Users\\proja\\.nuget\\packages\\tmds.dbus\\0.20.0\\tmds.dbus.0.20.0.nupkg.sha512",
     "C:\\Users\\proja\\.nuget\\packages\\xamarin.android.glide\\4.16.0.14\\xamarin.android.glide.4.16.0.14.nupkg.sha512",

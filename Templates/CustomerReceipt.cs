@@ -39,6 +39,9 @@ public static class CustomerReceipt
             Line($"Table  : {order.TableNumber}"),
         });
 
+        if (!string.IsNullOrEmpty(order.Cashier))
+            parts.Add(Line($"Cashier: {order.Cashier}"));
+
         if (!string.IsNullOrEmpty(order.CustomerName))
             parts.Add(Line($"Name   : {order.CustomerName}"));
 
@@ -46,7 +49,7 @@ public static class CustomerReceipt
 
         // Order items
         foreach (var item in order.Items)
-            parts.Add(OrderItemLine(item.Name, item.Quantity, item.Total));
+            parts.Add(OrderItemLine(item.Name, item.Quantity, item.Price));
 
         parts.AddRange(new[]
         {
@@ -54,12 +57,13 @@ public static class CustomerReceipt
 
             // Totals
             TotalLine("Subtotal", order.Subtotal),
+            TotalLine("Discount", order.DiscountTotal),
             TotalLine("VAT (12%)", order.Tax),
             BoldOn,
             TotalLine("TOTAL", order.Total),
             BoldOff,
             NewLine,
-            TotalLine($"Cash ({order.PaymentMethod})", order.CashReceived),
+            TotalLine($"Paid via {order.PaymentMethod}", order.AmountPaid),
             TotalLine("Change", order.Change),
 
             Divider(),

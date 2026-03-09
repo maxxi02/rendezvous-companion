@@ -18,6 +18,7 @@
     "configProperties": {
       "Microsoft.Android.Runtime.RuntimeFeature.IsMonoRuntime": true,
       "Microsoft.Android.Runtime.RuntimeFeature.IsCoreClrRuntime": false,
+      "MVVMTOOLKIT_ENABLE_INOTIFYPROPERTYCHANGING_SUPPORT": true,
       "Microsoft.Extensions.DependencyInjection.VerifyOpenGenericServiceTrimmability": true,
       "System.ComponentModel.DefaultValueAttribute.IsSupported": true,
       "System.Globalization.Invariant": false,

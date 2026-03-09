@@ -26,9 +26,17 @@ public static class KitchenSlip
             BoldOff,
             Line($"Time : {order.OrderDate:h:mm tt}"),
             Line($"Table: {order.TableNumber}"),
-
-            Divider(),
         };
+
+        if (!string.IsNullOrEmpty(order.OrderNote))
+        {
+            parts.Add(Divider());
+            parts.Add(BoldOn);
+            parts.Add(Line($"NOTE: {order.OrderNote}"));
+            parts.Add(BoldOff);
+        }
+
+        parts.Add(Divider());
 
         // Print each item with large text so kitchen can read easily
         foreach (var item in order.Items)

@@ -61,6 +61,10 @@
         "net10.0-android36.0": {
           "targetAlias": "net10.0-android",
           "dependencies": {
+            "CommunityToolkit.Mvvm": {
+              "target": "Package",
+              "version": "[8.4.0, )"
+            },
             "InTheHand.Net.Bluetooth": {
               "target": "Package",
               "version": "[4.2.3, )"
@@ -82,6 +86,10 @@
             "Plugin.BLE": {
               "target": "Package",
               "version": "[3.2.0, )"
+            },
+            "SocketIOClient": {
+              "target": "Package",
+              "version": "[3.1.2, )"
             },
             "System.IO.Ports": {
               "target": "Package",
@@ -389,6 +397,10 @@
         "net10.0-ios26.2": {
           "targetAlias": "net10.0-ios",
           "dependencies": {
+            "CommunityToolkit.Mvvm": {
+              "target": "Package",
+              "version": "[8.4.0, )"
+            },
             "InTheHand.Net.Bluetooth": {
               "target": "Package",
               "version": "[4.2.3, )"
@@ -410,6 +422,10 @@
             "Plugin.BLE": {
               "target": "Package",
               "version": "[3.2.0, )"
+            },
+            "SocketIOClient": {
+              "target": "Package",
+              "version": "[3.1.2, )"
             },
             "System.IO.Ports": {
               "target": "Package",
@@ -717,6 +733,10 @@
         "net10.0-maccatalyst26.2": {
           "targetAlias": "net10.0-maccatalyst",
           "dependencies": {
+            "CommunityToolkit.Mvvm": {
+              "target": "Package",
+              "version": "[8.4.0, )"
+            },
             "InTheHand.Net.Bluetooth": {
               "target": "Package",
               "version": "[4.2.3, )"
@@ -738,6 +758,10 @@
             "Plugin.BLE": {
               "target": "Package",
               "version": "[3.2.0, )"
+            },
+            "SocketIOClient": {
+              "target": "Package",
+              "version": "[3.1.2, )"
             },
             "System.IO.Ports": {
               "target": "Package",
@@ -1046,6 +1070,10 @@
         "net10.0-windows10.0.19041": {
           "targetAlias": "net10.0-windows10.0.19041.0",
           "dependencies": {
+            "CommunityToolkit.Mvvm": {
+              "target": "Package",
+              "version": "[8.4.0, )"
+            },
             "InTheHand.Net.Bluetooth": {
               "target": "Package",
               "version": "[4.2.3, )"
@@ -1061,6 +1089,10 @@
             "Plugin.BLE": {
               "target": "Package",
               "version": "[3.2.0, )"
+            },
+            "SocketIOClient": {
+              "target": "Package",
+              "version": "[3.1.2, )"
             },
             "System.IO.Ports": {
               "target": "Package",
