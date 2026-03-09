@@ -14,10 +14,6 @@ public partial class PrinterSettingsPage : ContentPage
         InitializeComponent();
         _printManager = printManager;
 
-        StoreNameEntry.Text = Preferences.Get("StoreName", "RENDEZVOUS");
-        StoreAddressEntry.Text = Preferences.Get("StoreAddress", "");
-        StoreTelEntry.Text = Preferences.Get("StoreTel", "");
-
         UpdateRoleSummary();
     }
 
@@ -36,9 +32,10 @@ public partial class PrinterSettingsPage : ContentPage
             _btDevices = await btService.GetAvailableDevicesAsync();
             BluetoothDevicesList.ItemsSource = _btDevices;
 
-            BtScanStatusLabel.Text = _btDevices.Count > 0
-                ? $"Found {_btDevices.Count} Bluetooth device(s). Tap Receipt or Kitchen to assign."
-                : "No Bluetooth devices found. Make sure your printer is paired and powered on.";
+            BtScanStatusLabel.Text =
+                _btDevices.Count > 0
+                    ? $"Found {_btDevices.Count} Bluetooth device(s). Tap Receipt or Kitchen to assign."
+                    : "No Bluetooth devices found. Make sure your printer is paired and powered on.";
         }
         catch (Exception ex)
         {
@@ -66,9 +63,10 @@ public partial class PrinterSettingsPage : ContentPage
             _usbDevices = await usbService.GetAvailableDevicesAsync();
             UsbDevicesList.ItemsSource = _usbDevices;
 
-            UsbScanStatusLabel.Text = _usbDevices.Count > 0
-                ? $"Found {_usbDevices.Count} USB device(s). Tap Receipt or Kitchen to assign."
-                : "No USB devices found. Make sure your printer is plugged in.";
+            UsbScanStatusLabel.Text =
+                _usbDevices.Count > 0
+                    ? $"Found {_usbDevices.Count} USB device(s). Tap Receipt or Kitchen to assign."
+                    : "No USB devices found. Make sure your printer is plugged in.";
         }
         catch (Exception ex)
         {
@@ -86,19 +84,26 @@ public partial class PrinterSettingsPage : ContentPage
     private async void OnAssignReceiptClicked(object? sender, EventArgs e)
     {
         var device = GetDeviceFromButton(sender);
-        if (device == null) return;
+        if (device == null)
+            return;
 
         var connected = await _printManager.ConnectReceiptPrinterAsync(device);
 
         if (connected)
         {
-            await DisplayAlertAsync("Receipt Printer Set",
-                $"{device.Name} [{device.ConnectionType}] assigned as Receipt Printer.", "OK");
+            await DisplayAlertAsync(
+                "Receipt Printer Set",
+                $"{device.Name} [{device.ConnectionType}] assigned as Receipt Printer.",
+                "OK"
+            );
         }
         else
         {
-            await DisplayAlertAsync("Connection Failed",
-                $"Could not connect to {device.Name}. Make sure it is on and in range.", "OK");
+            await DisplayAlertAsync(
+                "Connection Failed",
+                $"Could not connect to {device.Name}. Make sure it is on and in range.",
+                "OK"
+            );
         }
 
         UpdateRoleSummary();
@@ -107,19 +112,26 @@ public partial class PrinterSettingsPage : ContentPage
     private async void OnAssignKitchenClicked(object? sender, EventArgs e)
     {
         var device = GetDeviceFromButton(sender);
-        if (device == null) return;
+        if (device == null)
+            return;
 
         var connected = await _printManager.ConnectKitchenPrinterAsync(device);
 
         if (connected)
         {
-            await DisplayAlertAsync("Kitchen Printer Set",
-                $"{device.Name} [{device.ConnectionType}] assigned as Kitchen Printer.", "OK");
+            await DisplayAlertAsync(
+                "Kitchen Printer Set",
+                $"{device.Name} [{device.ConnectionType}] assigned as Kitchen Printer.",
+                "OK"
+            );
         }
         else
         {
-            await DisplayAlertAsync("Connection Failed",
-                $"Could not connect to {device.Name}. Make sure it is on and in range.", "OK");
+            await DisplayAlertAsync(
+                "Connection Failed",
+                $"Could not connect to {device.Name}. Make sure it is on and in range.",
+                "OK"
+            );
         }
 
         UpdateRoleSummary();
@@ -133,7 +145,8 @@ public partial class PrinterSettingsPage : ContentPage
         await DisplayAlertAsync(
             ok ? "Success" : "Failed",
             ok ? "Test receipt printed!" : "Print failed. Check receipt printer connection.",
-            "OK");
+            "OK"
+        );
     }
 
     private async void OnTestKitchenClicked(object? sender, EventArgs e)
@@ -142,20 +155,8 @@ public partial class PrinterSettingsPage : ContentPage
         await DisplayAlertAsync(
             ok ? "Success" : "Failed",
             ok ? "Test kitchen slip printed!" : "Print failed. Check kitchen printer connection.",
-            "OK");
-    }
-
-    // ─── Store Info ───────────────────────────────────────────────
-
-    private void OnSaveStoreInfoClicked(object? sender, EventArgs e)
-    {
-        _printManager.StoreName = StoreNameEntry.Text ?? "RENDEZVOUS";
-        _printManager.StoreAddress = StoreAddressEntry.Text ?? "";
-        _printManager.StoreTel = StoreTelEntry.Text ?? "";
-
-        Preferences.Set("StoreName", _printManager.StoreName);
-        Preferences.Set("StoreAddress", _printManager.StoreAddress);
-        Preferences.Set("StoreTel", _printManager.StoreTel);
+            "OK"
+        );
     }
 
     // ─── Helpers ──────────────────────────────────────────────────
@@ -172,7 +173,8 @@ public partial class PrinterSettingsPage : ContentPage
         // Receipt printer
         if (_printManager.ReceiptPrinterDevice != null)
         {
-            ReceiptRoleLabel.Text = $"{_printManager.ReceiptPrinterDevice.Name} [{_printManager.ReceiptPrinterDevice.ConnectionType}]";
+            ReceiptRoleLabel.Text =
+                $"{_printManager.ReceiptPrinterDevice.Name} [{_printManager.ReceiptPrinterDevice.ConnectionType}]";
             ReceiptRoleLabel.TextColor = Colors.Green;
             TestReceiptButton.IsEnabled = true;
         }
@@ -186,7 +188,8 @@ public partial class PrinterSettingsPage : ContentPage
         // Kitchen printer
         if (_printManager.KitchenPrinterDevice != null)
         {
-            KitchenRoleLabel.Text = $"{_printManager.KitchenPrinterDevice.Name} [{_printManager.KitchenPrinterDevice.ConnectionType}]";
+            KitchenRoleLabel.Text =
+                $"{_printManager.KitchenPrinterDevice.Name} [{_printManager.KitchenPrinterDevice.ConnectionType}]";
             KitchenRoleLabel.TextColor = Colors.Green;
             TestKitchenButton.IsEnabled = true;
         }
@@ -198,18 +201,36 @@ public partial class PrinterSettingsPage : ContentPage
         }
     }
 
-    private Order CreateTestOrder() => new Order
-    {
-        OrderNumber = "TEST-001",
-        OrderDate = DateTime.Now,
-        TableNumber = "1",
-        CustomerName = "Test Customer",
-        AmountPaid = 500,
-        Items = new List<OrderItem>
+    private Order CreateTestOrder() =>
+        new Order
         {
-            new() { Name = "Burger", Quantity = 1, Price = 150, Notes = "No onions" },
-            new() { Name = "Fries", Quantity = 2, Price = 60 },
-            new() { Name = "Iced Tea", Quantity = 1, Price = 55, Notes = "Less sugar" }
-        }
-    };
+            OrderNumber = "TEST-001",
+            OrderDate = DateTime.Now,
+            TableNumber = "1",
+            CustomerName = "Test Customer",
+            AmountPaid = 500,
+            Items = new List<OrderItem>
+            {
+                new()
+                {
+                    Name = "Burger",
+                    Quantity = 1,
+                    Price = 150,
+                    Notes = "No onions",
+                },
+                new()
+                {
+                    Name = "Fries",
+                    Quantity = 2,
+                    Price = 60,
+                },
+                new()
+                {
+                    Name = "Iced Tea",
+                    Quantity = 1,
+                    Price = 55,
+                    Notes = "Less sugar",
+                },
+            },
+        };
 }

@@ -14,11 +14,6 @@ public class PrintManager
     public bool IsReceiptPrinterConnected => _receiptPrinter?.IsConnected ?? false;
     public bool IsKitchenPrinterConnected => _kitchenPrinter?.IsConnected ?? false;
 
-    // Store settings
-    public string StoreName { get; set; } = "RENDEZVOUS";
-    public string StoreAddress { get; set; } = "";
-    public string StoreTel { get; set; } = "";
-
     /// <summary>
     /// Get all available devices (USB + Bluetooth combined)
     /// </summary>
@@ -81,7 +76,10 @@ public class PrintManager
         var socketService = App.Current?.Handler.MauiContext?.Services.GetService<SocketService>();
         if (socketService != null)
         {
-            await socketService.ReportPrinterStatusAsync(IsReceiptPrinterConnected, IsKitchenPrinterConnected);
+            await socketService.ReportPrinterStatusAsync(
+                IsReceiptPrinterConnected,
+                IsKitchenPrinterConnected
+            );
         }
     }
 
@@ -126,8 +124,12 @@ public class PrintManager
         var data = QrSlip.Build(url, label);
         bool success = false;
 
-        Console.WriteLine($"[PrintManager] PrintQRAsync called: url={url}, label={label}, target={target}");
-        Console.WriteLine($"[PrintManager] Receipt connected: {IsReceiptPrinterConnected}, Kitchen connected: {IsKitchenPrinterConnected}");
+        Console.WriteLine(
+            $"[PrintManager] PrintQRAsync called: url={url}, label={label}, target={target}"
+        );
+        Console.WriteLine(
+            $"[PrintManager] Receipt connected: {IsReceiptPrinterConnected}, Kitchen connected: {IsKitchenPrinterConnected}"
+        );
 
         // Try receipt printer
         if (_receiptPrinter?.IsConnected == true)
@@ -161,7 +163,8 @@ public class PrintManager
     public async Task<bool> PrintKitchenSlipAsync(Order order)
     {
         var printer = _kitchenPrinter ?? _receiptPrinter;
-        if (printer?.IsConnected != true) return false;
+        if (printer?.IsConnected != true)
+            return false;
         var data = KitchenSlip.Build(order);
         return await printer.PrintAsync(data);
     }
@@ -171,20 +174,23 @@ public class PrintManager
     /// </summary>
     public async Task<bool> PrintReceiptAsync(Order order)
     {
-        if (_receiptPrinter?.IsConnected != true) return false;
+        if (_receiptPrinter?.IsConnected != true)
+            return false;
         var data = CustomerReceipt.Build(order);
         return await _receiptPrinter.PrintAsync(data);
     }
 
     public async Task DisconnectAllAsync()
     {
-        if (_receiptPrinter != null) await _receiptPrinter.DisconnectAsync();
-        if (_kitchenPrinter != null) await _kitchenPrinter.DisconnectAsync();
+        if (_receiptPrinter != null)
+            await _receiptPrinter.DisconnectAsync();
+        if (_kitchenPrinter != null)
+            await _kitchenPrinter.DisconnectAsync();
         _ = ReportStatus();
     }
 
-    private IPrinterService CreateService(PrinterDevice device)
-        => device.ConnectionType == PrinterConnectionType.Bluetooth
+    private IPrinterService CreateService(PrinterDevice device) =>
+        device.ConnectionType == PrinterConnectionType.Bluetooth
             ? new BluetoothPrinterService()
             : new UsbPrinterService();
 }

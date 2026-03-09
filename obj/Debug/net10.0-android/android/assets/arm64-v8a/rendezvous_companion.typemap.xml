@@ -1,4 +1,4 @@
-<api type="debug" assembly-name="rendezvous_companion" mvid="c51c718d75e2449884c8b1d92ac858b7">
+<api type="debug" assembly-name="rendezvous_companion" mvid="6b9bd730e65e4672b0c82206929f879c">
   <java-to-managed>
     <entry java-name="crc64133f68d667423c24/MainActivity" managed-name="rendezvous_companion.MainActivity, rendezvous_companion" managed-type-token-id="33554444" />
     <entry java-name="crc64133f68d667423c24/MainApplication" managed-name="rendezvous_companion.MainApplication, rendezvous_companion" managed-type-token-id="33554445" />
