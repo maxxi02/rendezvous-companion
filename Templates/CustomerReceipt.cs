@@ -40,8 +40,10 @@ public static class CustomerReceipt
             // Order info
             Line($"Order #: {order.OrderNumber}"),
             Line($"Date   : {order.OrderDate:MM/dd/yyyy h:mm tt}"),
-            Line($"Table  : {order.TableNumber}"),
         });
+
+        if (!string.IsNullOrEmpty(order.TableNumber))
+            parts.Add(Line($"Table  : {order.TableNumber}"));
 
         if (!string.IsNullOrEmpty(order.Cashier))
             parts.Add(Line($"Cashier: {order.Cashier}"));

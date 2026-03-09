@@ -448,290 +448,290 @@ target triple = "x86_64-unknown-linux-android21"
 		i32 7753096; uint32_t buffer_offset
 	}, ; 86: Xamarin.KotlinX.Serialization.Core.Jvm
 	%struct.CompressedAssemblyDescriptor {
-		i32 190464, ; uint32_t uncompressed_file_size
+		i32 191488, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
 		i32 7844744; uint32_t buffer_offset
 	}, ; 87: rendezvous_companion
 	%struct.CompressedAssemblyDescriptor {
 		i32 27648, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8035208; uint32_t buffer_offset
+		i32 8036232; uint32_t buffer_offset
 	}, ; 88: System.Collections.Concurrent
 	%struct.CompressedAssemblyDescriptor {
 		i32 15872, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8062856; uint32_t buffer_offset
+		i32 8063880; uint32_t buffer_offset
 	}, ; 89: System.Collections.NonGeneric
 	%struct.CompressedAssemblyDescriptor {
 		i32 13824, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8078728; uint32_t buffer_offset
+		i32 8079752; uint32_t buffer_offset
 	}, ; 90: System.Collections.Specialized
 	%struct.CompressedAssemblyDescriptor {
 		i32 31744, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8092552; uint32_t buffer_offset
+		i32 8093576; uint32_t buffer_offset
 	}, ; 91: System.Collections
 	%struct.CompressedAssemblyDescriptor {
 		i32 11776, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8124296; uint32_t buffer_offset
+		i32 8125320; uint32_t buffer_offset
 	}, ; 92: System.ComponentModel.Primitives
 	%struct.CompressedAssemblyDescriptor {
 		i32 94720, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8136072; uint32_t buffer_offset
+		i32 8137096; uint32_t buffer_offset
 	}, ; 93: System.ComponentModel.TypeConverter
 	%struct.CompressedAssemblyDescriptor {
 		i32 5120, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8230792; uint32_t buffer_offset
+		i32 8231816; uint32_t buffer_offset
 	}, ; 94: System.ComponentModel
 	%struct.CompressedAssemblyDescriptor {
 		i32 12288, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8235912; uint32_t buffer_offset
+		i32 8236936; uint32_t buffer_offset
 	}, ; 95: System.Console
 	%struct.CompressedAssemblyDescriptor {
 		i32 51200, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8248200; uint32_t buffer_offset
+		i32 8249224; uint32_t buffer_offset
 	}, ; 96: System.Diagnostics.DiagnosticSource
 	%struct.CompressedAssemblyDescriptor {
 		i32 11776, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8299400; uint32_t buffer_offset
+		i32 8300424; uint32_t buffer_offset
 	}, ; 97: System.Drawing.Primitives
 	%struct.CompressedAssemblyDescriptor {
 		i32 5120, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8311176; uint32_t buffer_offset
+		i32 8312200; uint32_t buffer_offset
 	}, ; 98: System.Drawing
 	%struct.CompressedAssemblyDescriptor {
 		i32 61952, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8316296; uint32_t buffer_offset
+		i32 8317320; uint32_t buffer_offset
 	}, ; 99: System.Formats.Asn1
 	%struct.CompressedAssemblyDescriptor {
 		i32 22016, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8378248; uint32_t buffer_offset
+		i32 8379272; uint32_t buffer_offset
 	}, ; 100: System.IO.Compression.Brotli
 	%struct.CompressedAssemblyDescriptor {
 		i32 31744, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8400264; uint32_t buffer_offset
+		i32 8401288; uint32_t buffer_offset
 	}, ; 101: System.IO.Compression
 	%struct.CompressedAssemblyDescriptor {
 		i32 6144, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8432008; uint32_t buffer_offset
+		i32 8433032; uint32_t buffer_offset
 	}, ; 102: System.IO.Pipelines
 	%struct.CompressedAssemblyDescriptor {
 		i32 354816, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8438152; uint32_t buffer_offset
+		i32 8439176; uint32_t buffer_offset
 	}, ; 103: System.Linq.Expressions
 	%struct.CompressedAssemblyDescriptor {
 		i32 59904, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8792968; uint32_t buffer_offset
+		i32 8793992; uint32_t buffer_offset
 	}, ; 104: System.Linq
 	%struct.CompressedAssemblyDescriptor {
 		i32 16384, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8852872; uint32_t buffer_offset
+		i32 8853896; uint32_t buffer_offset
 	}, ; 105: System.Memory
 	%struct.CompressedAssemblyDescriptor {
 		i32 367104, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 8869256; uint32_t buffer_offset
+		i32 8870280; uint32_t buffer_offset
 	}, ; 106: System.Net.Http
 	%struct.CompressedAssemblyDescriptor {
 		i32 27648, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 9236360; uint32_t buffer_offset
+		i32 9237384; uint32_t buffer_offset
 	}, ; 107: System.Net.NameResolution
 	%struct.CompressedAssemblyDescriptor {
 		i32 25600, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 9264008; uint32_t buffer_offset
+		i32 9265032; uint32_t buffer_offset
 	}, ; 108: System.Net.NetworkInformation
 	%struct.CompressedAssemblyDescriptor {
 		i32 68608, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 9289608; uint32_t buffer_offset
+		i32 9290632; uint32_t buffer_offset
 	}, ; 109: System.Net.Primitives
 	%struct.CompressedAssemblyDescriptor {
 		i32 7168, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 9358216; uint32_t buffer_offset
+		i32 9359240; uint32_t buffer_offset
 	}, ; 110: System.Net.Requests
 	%struct.CompressedAssemblyDescriptor {
 		i32 147456, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 9365384; uint32_t buffer_offset
+		i32 9366408; uint32_t buffer_offset
 	}, ; 111: System.Net.Security
 	%struct.CompressedAssemblyDescriptor {
 		i32 105472, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 9512840; uint32_t buffer_offset
+		i32 9513864; uint32_t buffer_offset
 	}, ; 112: System.Net.Sockets
 	%struct.CompressedAssemblyDescriptor {
 		i32 8704, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 9618312; uint32_t buffer_offset
+		i32 9619336; uint32_t buffer_offset
 	}, ; 113: System.Net.WebHeaderCollection
 	%struct.CompressedAssemblyDescriptor {
 		i32 26624, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 9627016; uint32_t buffer_offset
+		i32 9628040; uint32_t buffer_offset
 	}, ; 114: System.Net.WebSockets.Client
 	%struct.CompressedAssemblyDescriptor {
 		i32 58880, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 9653640; uint32_t buffer_offset
+		i32 9654664; uint32_t buffer_offset
 	}, ; 115: System.Net.WebSockets
 	%struct.CompressedAssemblyDescriptor {
 		i32 5120, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 9712520; uint32_t buffer_offset
+		i32 9713544; uint32_t buffer_offset
 	}, ; 116: System.Numerics.Vectors
 	%struct.CompressedAssemblyDescriptor {
 		i32 17920, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 9717640; uint32_t buffer_offset
+		i32 9718664; uint32_t buffer_offset
 	}, ; 117: System.ObjectModel
 	%struct.CompressedAssemblyDescriptor {
 		i32 73728, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 9735560; uint32_t buffer_offset
+		i32 9736584; uint32_t buffer_offset
 	}, ; 118: System.Private.Uri
 	%struct.CompressedAssemblyDescriptor {
 		i32 30720, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 9809288; uint32_t buffer_offset
+		i32 9810312; uint32_t buffer_offset
 	}, ; 119: System.Private.Xml.Linq
 	%struct.CompressedAssemblyDescriptor {
 		i32 551424, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 9840008; uint32_t buffer_offset
+		i32 9841032; uint32_t buffer_offset
 	}, ; 120: System.Private.Xml
 	%struct.CompressedAssemblyDescriptor {
 		i32 9216, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 10391432; uint32_t buffer_offset
+		i32 10392456; uint32_t buffer_offset
 	}, ; 121: System.Runtime.InteropServices
 	%struct.CompressedAssemblyDescriptor {
 		i32 5120, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 10400648; uint32_t buffer_offset
+		i32 10401672; uint32_t buffer_offset
 	}, ; 122: System.Runtime.Loader
 	%struct.CompressedAssemblyDescriptor {
 		i32 77824, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 10405768; uint32_t buffer_offset
+		i32 10406792; uint32_t buffer_offset
 	}, ; 123: System.Runtime.Numerics
 	%struct.CompressedAssemblyDescriptor {
 		i32 14848, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 10483592; uint32_t buffer_offset
+		i32 10484616; uint32_t buffer_offset
 	}, ; 124: System.Runtime
 	%struct.CompressedAssemblyDescriptor {
 		i32 5120, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 10498440; uint32_t buffer_offset
+		i32 10499464; uint32_t buffer_offset
 	}, ; 125: System.Security.Cryptography.X509Certificates
 	%struct.CompressedAssemblyDescriptor {
 		i32 166912, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 10503560; uint32_t buffer_offset
+		i32 10504584; uint32_t buffer_offset
 	}, ; 126: System.Security.Cryptography
 	%struct.CompressedAssemblyDescriptor {
 		i32 5120, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 10670472; uint32_t buffer_offset
+		i32 10671496; uint32_t buffer_offset
 	}, ; 127: System.Text.Encoding.Extensions
 	%struct.CompressedAssemblyDescriptor {
 		i32 29696, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 10675592; uint32_t buffer_offset
+		i32 10676616; uint32_t buffer_offset
 	}, ; 128: System.Text.Encodings.Web
 	%struct.CompressedAssemblyDescriptor {
 		i32 379904, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 10705288; uint32_t buffer_offset
+		i32 10706312; uint32_t buffer_offset
 	}, ; 129: System.Text.Json
 	%struct.CompressedAssemblyDescriptor {
 		i32 332288, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 11085192; uint32_t buffer_offset
+		i32 11086216; uint32_t buffer_offset
 	}, ; 130: System.Text.RegularExpressions
 	%struct.CompressedAssemblyDescriptor {
 		i32 24064, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 11417480; uint32_t buffer_offset
+		i32 11418504; uint32_t buffer_offset
 	}, ; 131: System.Threading.Channels
 	%struct.CompressedAssemblyDescriptor {
 		i32 5120, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 11441544; uint32_t buffer_offset
+		i32 11442568; uint32_t buffer_offset
 	}, ; 132: System.Threading.Thread
 	%struct.CompressedAssemblyDescriptor {
 		i32 12288, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 11446664; uint32_t buffer_offset
+		i32 11447688; uint32_t buffer_offset
 	}, ; 133: System.Threading
 	%struct.CompressedAssemblyDescriptor {
 		i32 4608, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 11458952; uint32_t buffer_offset
+		i32 11459976; uint32_t buffer_offset
 	}, ; 134: System.Xml.Linq
 	%struct.CompressedAssemblyDescriptor {
 		i32 5120, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 11463560; uint32_t buffer_offset
+		i32 11464584; uint32_t buffer_offset
 	}, ; 135: System.Xml.ReaderWriter
 	%struct.CompressedAssemblyDescriptor {
 		i32 5120, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 11468680; uint32_t buffer_offset
+		i32 11469704; uint32_t buffer_offset
 	}, ; 136: System.Xml.XDocument
 	%struct.CompressedAssemblyDescriptor {
 		i32 5120, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 11473800; uint32_t buffer_offset
+		i32 11474824; uint32_t buffer_offset
 	}, ; 137: System
 	%struct.CompressedAssemblyDescriptor {
 		i32 6144, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 11478920; uint32_t buffer_offset
+		i32 11479944; uint32_t buffer_offset
 	}, ; 138: netstandard
 	%struct.CompressedAssemblyDescriptor {
 		i32 2027008, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 11485064; uint32_t buffer_offset
+		i32 11486088; uint32_t buffer_offset
 	}, ; 139: System.Private.CoreLib
 	%struct.CompressedAssemblyDescriptor {
 		i32 171008, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 13512072; uint32_t buffer_offset
+		i32 13513096; uint32_t buffer_offset
 	}, ; 140: Java.Interop
 	%struct.CompressedAssemblyDescriptor {
 		i32 22560, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 13683080; uint32_t buffer_offset
+		i32 13684104; uint32_t buffer_offset
 	}, ; 141: Mono.Android.Runtime
 	%struct.CompressedAssemblyDescriptor {
 		i32 2152448, ; uint32_t uncompressed_file_size
 		i1 false, ; bool loaded
-		i32 13705640; uint32_t buffer_offset
+		i32 13706664; uint32_t buffer_offset
 	} ; 142: Mono.Android
 ], align 16
 
-@uncompressed_assemblies_data_size = dso_local local_unnamed_addr constant i32 15858088, align 4
+@uncompressed_assemblies_data_size = dso_local local_unnamed_addr constant i32 15859112, align 4
 
-@uncompressed_assemblies_data_buffer = dso_local local_unnamed_addr global [15858088 x i8] zeroinitializer, align 16
+@uncompressed_assemblies_data_buffer = dso_local local_unnamed_addr global [15859112 x i8] zeroinitializer, align 16
 
 ; Metadata
 !llvm.module.flags = !{!0, !1}
