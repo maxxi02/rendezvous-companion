@@ -67,4 +67,25 @@ public static class EscPosCommands
             result.AddRange(arr);
         return result.ToArray();
     }
+
+    /// <summary>
+    /// Generates ESC/POS commands to print a QR code.
+    /// </summary>
+    public static byte[] QRCode(string data)
+    {
+        var strBytes = Encoding.ASCII.GetBytes(data);
+        int pL = (strBytes.Length + 3) & 0xFF;
+        int pH = ((strBytes.Length + 3) >> 8) & 0xFF;
+
+        var storeDataCmd = new byte[] { 0x1D, 0x28, 0x6B, (byte)pL, (byte)pH, 0x31, 0x50, 0x30 };
+        
+        return Combine(
+            new byte[] { 0x1D, 0x28, 0x6B, 0x04, 0x00, 0x31, 0x41, 0x32, 0x00 }, // Model 2
+            new byte[] { 0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x43, 0x06 },       // Size 6
+            new byte[] { 0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x45, 0x30 },       // Error correction L
+            storeDataCmd,
+            strBytes,
+            new byte[] { 0x1D, 0x28, 0x6B, 0x03, 0x00, 0x31, 0x51, 0x30 }        // Print
+        );
+    }
 }

@@ -24,6 +24,11 @@
             Print both receipt and kitchen slip for an order
             </summary>
         </member>
+        <member name="M:rendezvous_companion.Services.PrintManager.PrintQRAsync(System.String,System.String,System.String)">
+            <summary>
+            Print a QR code (e.g. for Tables or Walk-ins)
+            </summary>
+        </member>
         <member name="M:rendezvous_companion.Services.PrintManager.PrintKitchenSlipAsync(rendezvous_companion.Models.Order)">
             <summary>
             Print only the kitchen slip
@@ -49,6 +54,11 @@
         <member name="M:rendezvous_companion.Templates.EscPosCommands.TotalLine(System.String,System.Decimal)">
             <summary>
             Format a total line: "TOTAL            P330.00"
+            </summary>
+        </member>
+        <member name="M:rendezvous_companion.Templates.EscPosCommands.QRCode(System.String)">
+            <summary>
+            Generates ESC/POS commands to print a QR code.
             </summary>
         </member>
         <member name="T:rendezvous_companion.Resource">

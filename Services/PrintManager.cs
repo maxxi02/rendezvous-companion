@@ -118,6 +118,43 @@ public class PrintManager
     }
 
     /// <summary>
+    /// Print a QR code (e.g. for Tables or Walk-ins)
+    /// </summary>
+    public async Task<bool> PrintQRAsync(string url, string label, string target)
+    {
+        bool success = false;
+        var data = QrSlip.Build(url, label);
+
+        if (target == "receipt" || target == "both")
+        {
+            if (_receiptPrinter?.IsConnected == true)
+            {
+                success = await _receiptPrinter.PrintAsync(data);
+            }
+        }
+        
+        if (target == "kitchen" || target == "both")
+        {
+            if (_kitchenPrinter?.IsConnected == true)
+            {
+                success = await _kitchenPrinter.PrintAsync(data) || success;
+            }
+        }
+
+        // Fallback: If target was requested but printer is offline, try the other one.
+        if (!success)
+        {
+             var fallbackPrinter = _receiptPrinter?.IsConnected == true ? _receiptPrinter : _kitchenPrinter;
+             if (fallbackPrinter != null)
+             {
+                 success = await fallbackPrinter.PrintAsync(data);
+             }
+        }
+
+        return success;
+    }
+
+    /// <summary>
     /// Print only the kitchen slip
     /// </summary>
     public async Task<bool> PrintKitchenSlipAsync(Order order)

@@ -219,6 +219,39 @@ public class SocketService
             }
         });
 
+        // ── Receive QR print job from POS ──
+        _client.On("print:qr", async response =>
+        {
+            try
+            {
+                var data = response.GetValue<JsonElement>();
+                var jobId = data.GetProperty("jobId").GetString();
+                var url = data.GetProperty("url").GetString();
+                var label = data.GetProperty("label").GetString();
+                var target = data.TryGetProperty("target", out var t) ? t.GetString() : "receipt";
+
+                Console.WriteLine($"[Socket] QR Print Job Received: {jobId}");
+
+                var printManager = App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
+                if (printManager != null && url != null && label != null)
+                {
+                    bool success = await printManager.PrintQRAsync(url, label, target ?? "receipt");
+
+                    await _client.EmitAsync("print:job:result", new
+                    {
+                        jobId = jobId,
+                        success = success,
+                        receipt = target == "receipt",
+                        kitchen = target == "kitchen"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Socket] print:qr error: {ex.Message}");
+            }
+        });
+
         // ── Receive Z-Report print job from POS ──
         _client.On("print:zreport", async response =>
         {
