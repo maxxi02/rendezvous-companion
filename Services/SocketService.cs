@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
-using SocketIOClient;
-using rendezvous_companion.Models;
 using System.Text.Json;
+using rendezvous_companion.Models;
+using SocketIOClient;
 
 namespace rendezvous_companion.Services;
 
@@ -23,12 +23,15 @@ public class SocketService
         // Must be reachable from the Android device on the same network
         _serverUrl = "https://rendezvous-server-gpmv.onrender.com";
 
-        _client = new SocketIOClient.SocketIO(_serverUrl, new SocketIOOptions
-        {
-            Transport = SocketIOClient.Transport.TransportProtocol.WebSocket,
-            ReconnectionAttempts = int.MaxValue,
-            ReconnectionDelay = 2000
-        });
+        _client = new SocketIOClient.SocketIO(
+            _serverUrl,
+            new SocketIOOptions
+            {
+                Transport = SocketIOClient.Transport.TransportProtocol.WebSocket,
+                ReconnectionAttempts = int.MaxValue,
+                ReconnectionDelay = 2000,
+            }
+        );
 
         RegisterEvents();
     }
@@ -38,29 +41,36 @@ public class SocketService
         _client.OnConnected += (sender, e) =>
         {
             Console.WriteLine($"[Socket] Connected to {_serverUrl}");
-            
+
             // 1. Join the POS room to receive background updates
             _client.EmitAsync("pos:join");
 
             // 2. Report current printer status
-            var printManager = App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
+            var printManager =
+                App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
             if (printManager != null)
             {
-                _ = ReportPrinterStatusAsync(printManager.IsReceiptPrinterConnected, printManager.IsKitchenPrinterConnected);
+                _ = ReportPrinterStatusAsync(
+                    printManager.IsReceiptPrinterConnected,
+                    printManager.IsKitchenPrinterConnected
+                );
             }
 
             // 3. Fetch the current list of active orders
-            _client.EmitAsync("order:queue:list", new { statuses = new[] { "pending_payment", "queueing", "preparing", "serving" } });
+            _client.EmitAsync(
+                "order:queue:list",
+                new { statuses = new[] { "pending_payment", "queueing", "preparing", "serving" } }
+            );
 
-            MainThread.BeginInvokeOnMainThread(() =>
-                ConnectionStatusChanged?.Invoke("connected"));
+            MainThread.BeginInvokeOnMainThread(() => ConnectionStatusChanged?.Invoke("connected"));
         };
 
         _client.OnDisconnected += (sender, reason) =>
         {
             Console.WriteLine($"[Socket] Disconnected: {reason}");
             MainThread.BeginInvokeOnMainThread(() =>
-                ConnectionStatusChanged?.Invoke("disconnected"));
+                ConnectionStatusChanged?.Invoke("disconnected")
+            );
         };
 
         _client.OnError += (sender, error) =>
@@ -69,19 +79,132 @@ public class SocketService
         };
 
         // ── Emitted by server when a new order is created or payment confirmed ──
-        _client.On("order:queue:updated", response =>
-        {
-            try
+        _client.On(
+            "order:queue:updated",
+            response =>
             {
-                var data = response.GetValue<JsonElement>();
-                if (data.TryGetProperty("order", out var orderElement))
+                try
                 {
-                    var order = JsonSerializer.Deserialize<Order>(
-                        orderElement.GetRawText(),
-                        JsonOptions);
+                    var data = response.GetValue<JsonElement>();
+                    if (data.TryGetProperty("order", out var orderElement))
+                    {
+                        var order = JsonSerializer.Deserialize<Order>(
+                            orderElement.GetRawText(),
+                            JsonOptions
+                        );
 
+                        if (order != null)
+                        {
+                            MainThread.BeginInvokeOnMainThread(() =>
+                            {
+                                var existing = Orders.FirstOrDefault(o =>
+                                    o.OrderId == order.OrderId
+                                );
+                                if (existing != null)
+                                {
+                                    var index = Orders.IndexOf(existing);
+                                    Orders[index] = order;
+                                }
+                                else
+                                {
+                                    Orders.Insert(0, order);
+                                }
+                            });
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Socket] order:queue:updated error: {ex.Message}");
+                }
+            }
+        );
+
+        // ── Emitted by server when an order's status changes ──
+        _client.On(
+            "order:status:changed",
+            response =>
+            {
+                try
+                {
+                    var data = response.GetValue<JsonElement>();
+
+                    var orderId = data.TryGetProperty("orderId", out var id)
+                        ? id.GetString()
+                        : null;
+                    var queueStatus = data.TryGetProperty("queueStatus", out var qs)
+                        ? qs.GetString()
+                        : null;
+
+                    if (orderId == null)
+                        return;
+
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        var existing = Orders.FirstOrDefault(o => o.OrderId == orderId);
+                        if (existing != null && queueStatus != null)
+                        {
+                            existing.QueueStatus = queueStatus;
+                            var index = Orders.IndexOf(existing);
+                            Orders[index] = existing; // trigger UI refresh
+                        }
+
+                        // Notify any listeners (e.g. a status page)
+                        if (existing != null)
+                            OrderStatusChanged?.Invoke(existing);
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Socket] order:status:changed error: {ex.Message}");
+                }
+            }
+        );
+
+        // ── Emitted by server after order:queue:list request ──
+        _client.On(
+            "order:queue:list:result",
+            response =>
+            {
+                try
+                {
+                    var orders = response.GetValue<List<Order>>();
+                    if (orders != null)
+                    {
+                        MainThread.BeginInvokeOnMainThread(() =>
+                        {
+                            Orders.Clear();
+                            foreach (var order in orders.OrderByDescending(o => o.OrderDate))
+                            {
+                                Orders.Add(order);
+                            }
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Socket] order:queue:list:result error: {ex.Message}");
+                }
+            }
+        );
+
+        // ── Receive print job from POS ──
+        _client.On(
+            "print:job",
+            async response =>
+            {
+                try
+                {
+                    var job = response.GetValue<JsonElement>();
+                    Console.WriteLine($"[Socket] Print Job Received: {job.GetProperty("jobId")}");
+
+                    var target = job.GetProperty("target").GetString();
+                    var input = job.GetProperty("input");
+
+                    var order = JsonSerializer.Deserialize<Order>(input.GetRawText(), JsonOptions);
                     if (order != null)
                     {
+                        // Immediately surface the order in the companion's Orders tab
                         MainThread.BeginInvokeOnMainThread(() =>
                         {
                             var existing = Orders.FirstOrDefault(o => o.OrderId == order.OrderId);
@@ -95,188 +218,166 @@ public class SocketService
                                 Orders.Insert(0, order);
                             }
                         });
+
+                        var printManager =
+                            App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
+                        if (printManager != null)
+                        {
+                            bool receiptPrinted = false;
+                            bool kitchenPrinted = false;
+
+                            if (target == "receipt" || target == "both")
+                                receiptPrinted = await printManager.PrintReceiptAsync(order);
+
+                            if (target == "kitchen" || target == "both")
+                                kitchenPrinted = await printManager.PrintKitchenSlipAsync(order);
+
+                            await _client.EmitAsync(
+                                "print:job:result",
+                                new
+                                {
+                                    jobId = job.GetProperty("jobId").GetString(),
+                                    success = true,
+                                    receipt = receiptPrinted
+                                        || target == "receipt"
+                                        || target == "both",
+                                    kitchen = kitchenPrinted
+                                        || target == "kitchen"
+                                        || target == "both",
+                                }
+                            );
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[Socket] order:queue:updated error: {ex.Message}");
-            }
-        });
-
-        // ── Emitted by server when an order's status changes ──
-        _client.On("order:status:changed", response =>
-        {
-            try
-            {
-                var data = response.GetValue<JsonElement>();
-
-                var orderId = data.TryGetProperty("orderId", out var id)
-                    ? id.GetString() : null;
-                var queueStatus = data.TryGetProperty("queueStatus", out var qs)
-                    ? qs.GetString() : null;
-
-                if (orderId == null) return;
-
-                MainThread.BeginInvokeOnMainThread(() =>
+                catch (Exception ex)
                 {
-                    var existing = Orders.FirstOrDefault(o => o.OrderId == orderId);
-                    if (existing != null && queueStatus != null)
-                    {
-                        existing.QueueStatus = queueStatus;
-                        var index = Orders.IndexOf(existing);
-                        Orders[index] = existing; // trigger UI refresh
-                    }
-
-                    // Notify any listeners (e.g. a status page)
-                    if (existing != null)
-                        OrderStatusChanged?.Invoke(existing);
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[Socket] order:status:changed error: {ex.Message}");
-            }
-        });
-
-        // ── Emitted by server after order:queue:list request ──
-        _client.On("order:queue:list:result", response =>
-        {
-            try
-            {
-                var orders = response.GetValue<List<Order>>();
-                if (orders != null)
-                {
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        Orders.Clear();
-                        foreach (var order in orders.OrderByDescending(o => o.OrderDate))
-                        {
-                            Orders.Add(order);
-                        }
-                    });
+                    Console.WriteLine($"[Socket] print:job error: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[Socket] order:queue:list:result error: {ex.Message}");
-            }
-        });
-
-        // ── Receive print job from POS ──
-        _client.On("print:job", async response =>
-        {
-            try
-            {
-                var job = response.GetValue<JsonElement>();
-                Console.WriteLine($"[Socket] Print Job Received: {job.GetProperty("jobId")}");
-                
-                var target = job.GetProperty("target").GetString();
-                var input = job.GetProperty("input");
-                
-                var order = JsonSerializer.Deserialize<Order>(input.GetRawText(), JsonOptions);
-                if (order != null)
-                {
-                    // Immediately surface the order in the companion's Orders tab
-                    MainThread.BeginInvokeOnMainThread(() =>
-                    {
-                        var existing = Orders.FirstOrDefault(o => o.OrderId == order.OrderId);
-                        if (existing != null)
-                        {
-                            var index = Orders.IndexOf(existing);
-                            Orders[index] = order;
-                        }
-                        else
-                        {
-                            Orders.Insert(0, order);
-                        }
-                    });
-
-                    var printManager = App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
-                    if (printManager != null)
-                    {
-                        bool receiptPrinted = false;
-                        bool kitchenPrinted = false;
-
-                        if (target == "receipt" || target == "both")
-                            receiptPrinted = await printManager.PrintReceiptAsync(order);
-                        
-                        if (target == "kitchen" || target == "both")
-                            kitchenPrinted = await printManager.PrintKitchenSlipAsync(order);
-
-                        await _client.EmitAsync("print:job:result", new { 
-                            jobId = job.GetProperty("jobId").GetString(), 
-                            success = true,
-                            receipt = receiptPrinted || target == "receipt" || target == "both",
-                            kitchen = kitchenPrinted || target == "kitchen" || target == "both"
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[Socket] print:job error: {ex.Message}");
-            }
-        });
+        );
 
         // ── Receive QR print job from POS ──
-        _client.On("print:qr", async response =>
-        {
-            try
+        _client.On(
+            "print:qr",
+            async response =>
             {
-                var data = response.GetValue<JsonElement>();
-                var jobId = data.GetProperty("jobId").GetString();
-                var url = data.GetProperty("url").GetString();
-                var label = data.GetProperty("label").GetString();
-                var target = data.TryGetProperty("target", out var t) ? t.GetString() : "receipt";
-
-                Console.WriteLine($"[Socket] QR Print Job Received: {jobId}");
-
-                var printManager = App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
-                if (printManager != null && url != null && label != null)
+                try
                 {
-                    bool success = await printManager.PrintQRAsync(url, label, target ?? "receipt");
+                    var data = response.GetValue<JsonElement>();
+                    var jobId = data.GetProperty("jobId").GetString();
+                    var url = data.GetProperty("url").GetString();
+                    var label = data.GetProperty("label").GetString();
+                    var target = data.TryGetProperty("target", out var t)
+                        ? t.GetString()
+                        : "receipt";
 
-                    await _client.EmitAsync("print:job:result", new
+                    Console.WriteLine($"[Socket] QR Print Job Received: {jobId}");
+
+                    var printManager =
+                        App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
+                    if (printManager != null && url != null && label != null)
                     {
-                        jobId = jobId,
-                        success = success,
-                        receipt = target == "receipt",
-                        kitchen = target == "kitchen"
-                    });
+                        bool success = await printManager.PrintQRAsync(
+                            url,
+                            label,
+                            target ?? "receipt"
+                        );
+
+                        await _client.EmitAsync(
+                            "print:job:result",
+                            new
+                            {
+                                jobId = jobId,
+                                success = success,
+                                receipt = target == "receipt",
+                                kitchen = target == "kitchen",
+                            }
+                        );
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Socket] print:qr error: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[Socket] print:qr error: {ex.Message}");
-            }
-        });
+        );
 
         // ── Receive Z-Report print job from POS ──
-        _client.On("print:zreport", async response =>
-        {
-            Console.WriteLine("[Socket] Z-Report Print Job Received (not implemented yet)");
-        });
+        _client.On(
+            "print:zreport",
+            async response =>
+            {
+                Console.WriteLine("[Socket] Z-Report Print Job Received");
+                try
+                {
+                    var dict = response.GetValue<Dictionary<string, JsonElement>>();
+                    if (dict.TryGetValue("data", out var dataElement))
+                    {
+                        var report = JsonSerializer.Deserialize<ZReport>(
+                            dataElement.GetRawText(),
+                            new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                        );
+                        if (report != null)
+                        {
+                            Console.WriteLine(
+                                $"[Socket] Parsed Z-Report for {report.BusinessName}"
+                            );
+
+                            var printManager =
+                                App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
+                            if (printManager != null)
+                            {
+                                bool success = await printManager.PrintZReportAsync(report);
+
+                                // We also get jobId, emit the result back to the server
+                                if (dict.TryGetValue("jobId", out var jobIdElement))
+                                {
+                                    var jobId = jobIdElement.GetString();
+                                    await _client.EmitAsync(
+                                        "print:job:result",
+                                        new
+                                        {
+                                            jobId = jobId,
+                                            success = success,
+                                            receipt = true, // Z-Report always goes to receipt
+                                            kitchen = false,
+                                        }
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Socket] print:zreport parsing error: {ex.Message}");
+                }
+            }
+        );
 
         // ── Emitted by server when a table is updated ──
-        _client.On("table:updated", response =>
-        {
-            try
+        _client.On(
+            "table:updated",
+            response =>
             {
-                var data = response.GetValue<JsonElement>();
-                Console.WriteLine($"[Socket] table:updated: {data}");
-                // Hook into your table model here if needed
+                try
+                {
+                    var data = response.GetValue<JsonElement>();
+                    Console.WriteLine($"[Socket] table:updated: {data}");
+                    // Hook into your table model here if needed
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[Socket] table:updated error: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[Socket] table:updated error: {ex.Message}");
-            }
-        });
+        );
     }
 
     public async Task ConnectAsync()
     {
-        if (_client.Connected) return;
+        if (_client.Connected)
+            return;
 
         try
         {
@@ -291,7 +392,8 @@ public class SocketService
 
     public async Task DisconnectAsync()
     {
-        if (!_client.Connected) return;
+        if (!_client.Connected)
+            return;
 
         try
         {
@@ -305,12 +407,13 @@ public class SocketService
 
     public async Task ReportPrinterStatusAsync(bool usb, bool bluetooth)
     {
-        if (!_client.Connected) return;
+        if (!_client.Connected)
+            return;
         await _client.EmitAsync("companion:printer:status", new { usb, bt = bluetooth });
     }
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        PropertyNameCaseInsensitive = true
+        PropertyNameCaseInsensitive = true,
     };
 }

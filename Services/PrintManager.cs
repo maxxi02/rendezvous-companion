@@ -180,6 +180,33 @@ public class PrintManager
         return await _receiptPrinter.PrintAsync(data);
     }
 
+    /// <summary>
+    /// Print a Z-Reading report
+    /// </summary>
+    public async Task<bool> PrintZReportAsync(ZReport report)
+    {
+        if (_receiptPrinter?.IsConnected != true)
+        {
+            Console.WriteLine(
+                "[PrintManager] Cannot print Z-Report: Receipt printer is not connected."
+            );
+            return false;
+        }
+
+        try
+        {
+            var data = ZReportReceipt.Build(report);
+            bool success = await _receiptPrinter.PrintAsync(data);
+            Console.WriteLine($"[PrintManager] PrintZReportAsync result: {success}");
+            return success;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[PrintManager] Error building/printing Z-Report: {ex.Message}");
+            return false;
+        }
+    }
+
     public async Task DisconnectAllAsync()
     {
         if (_receiptPrinter != null)
