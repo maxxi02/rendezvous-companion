@@ -26,7 +26,8 @@
         </member>
         <member name="M:rendezvous_companion.Services.PrintManager.PrintQRAsync(System.String,System.String,System.String)">
             <summary>
-            Print a QR code (e.g. for Tables or Walk-ins)
+            Print a QR code (e.g. for Tables or Walk-ins).
+            Always prints to all connected printers so one missing printer doesn't block.
             </summary>
         </member>
         <member name="M:rendezvous_companion.Services.PrintManager.PrintKitchenSlipAsync(rendezvous_companion.Models.Order)">

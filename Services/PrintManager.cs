@@ -118,37 +118,38 @@ public class PrintManager
     }
 
     /// <summary>
-    /// Print a QR code (e.g. for Tables or Walk-ins)
+    /// Print a QR code (e.g. for Tables or Walk-ins).
+    /// Always prints to all connected printers so one missing printer doesn't block.
     /// </summary>
     public async Task<bool> PrintQRAsync(string url, string label, string target)
     {
-        bool success = false;
         var data = QrSlip.Build(url, label);
+        bool success = false;
 
-        if (target == "receipt" || target == "both")
+        Console.WriteLine($"[PrintManager] PrintQRAsync called: url={url}, label={label}, target={target}");
+        Console.WriteLine($"[PrintManager] Receipt connected: {IsReceiptPrinterConnected}, Kitchen connected: {IsKitchenPrinterConnected}");
+
+        // Try receipt printer
+        if (_receiptPrinter?.IsConnected == true)
         {
-            if (_receiptPrinter?.IsConnected == true)
-            {
-                success = await _receiptPrinter.PrintAsync(data);
-            }
-        }
-        
-        if (target == "kitchen" || target == "both")
-        {
-            if (_kitchenPrinter?.IsConnected == true)
-            {
-                success = await _kitchenPrinter.PrintAsync(data) || success;
-            }
+            Console.WriteLine("[PrintManager] Sending to receipt printer...");
+            var ok = await _receiptPrinter.PrintAsync(data);
+            Console.WriteLine($"[PrintManager] Receipt printer result: {ok}");
+            success = ok || success;
         }
 
-        // Fallback: If target was requested but printer is offline, try the other one.
+        // Try kitchen printer
+        if (_kitchenPrinter?.IsConnected == true)
+        {
+            Console.WriteLine("[PrintManager] Sending to kitchen printer...");
+            var ok = await _kitchenPrinter.PrintAsync(data);
+            Console.WriteLine($"[PrintManager] Kitchen printer result: {ok}");
+            success = ok || success;
+        }
+
         if (!success)
         {
-             var fallbackPrinter = _receiptPrinter?.IsConnected == true ? _receiptPrinter : _kitchenPrinter;
-             if (fallbackPrinter != null)
-             {
-                 success = await fallbackPrinter.PrintAsync(data);
-             }
+            Console.WriteLine("[PrintManager] No printers available to print QR.");
         }
 
         return success;
