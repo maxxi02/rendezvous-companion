@@ -21,7 +21,7 @@ public class SocketService
     {
         // ⚠️ Replace with your server's LAN IP (find it with `ipconfig` on Windows)
         // Must be reachable from the Android device on the same network
-        _serverUrl = "http://192.168.1.15:8080";
+        _serverUrl = "https://rendezvous-server-gpmv.onrender.com";
 
         _client = new SocketIOClient.SocketIO(_serverUrl, new SocketIOOptions
         {
@@ -177,21 +177,38 @@ public class SocketService
                 var order = JsonSerializer.Deserialize<Order>(input.GetRawText(), JsonOptions);
                 if (order != null)
                 {
+                    // Immediately surface the order in the companion's Orders tab
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        var existing = Orders.FirstOrDefault(o => o.OrderId == order.OrderId);
+                        if (existing != null)
+                        {
+                            var index = Orders.IndexOf(existing);
+                            Orders[index] = order;
+                        }
+                        else
+                        {
+                            Orders.Insert(0, order);
+                        }
+                    });
+
                     var printManager = App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
                     if (printManager != null)
                     {
-                        bool success = false;
+                        bool receiptPrinted = false;
+                        bool kitchenPrinted = false;
+
                         if (target == "receipt" || target == "both")
-                            success = await printManager.PrintReceiptAsync(order);
+                            receiptPrinted = await printManager.PrintReceiptAsync(order);
                         
                         if (target == "kitchen" || target == "both")
-                            success = await printManager.PrintKitchenSlipAsync(order);
+                            kitchenPrinted = await printManager.PrintKitchenSlipAsync(order);
 
                         await _client.EmitAsync("print:job:result", new { 
                             jobId = job.GetProperty("jobId").GetString(), 
-                            success = true, // We report true if we attempted it
-                            receipt = target == "receipt" || target == "both",
-                            kitchen = target == "kitchen" || target == "both"
+                            success = true,
+                            receipt = receiptPrinted || target == "receipt" || target == "both",
+                            kitchen = kitchenPrinted || target == "kitchen" || target == "both"
                         });
                     }
                 }

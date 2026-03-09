@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>rendezvous_companion</name>
+    </assembly>
+    <members>
+        <member name="M:rendezvous_companion.Services.PrintManager.ScanDevicesAsync">
+            <summary>
+            Get all available devices (USB + Bluetooth combined)
+            </summary>
+        </member>
+        <member name="M:rendezvous_companion.Services.PrintManager.ConnectReceiptPrinterAsync(rendezvous_companion.Services.PrinterDevice)">
+            <summary>
+            Connect a printer for receipt printing
+            </summary>
+        </member>
+        <member name="M:rendezvous_companion.Services.PrintManager.ConnectKitchenPrinterAsync(rendezvous_companion.Services.PrinterDevice)">
+            <summary>
+            Connect a printer for kitchen slips
+            </summary>
+        </member>
+        <member name="M:rendezvous_companion.Services.PrintManager.PrintOrderAsync(rendezvous_companion.Models.Order)">
+            <summary>
+            Print both receipt and kitchen slip for an order
+            </summary>
+        </member>
+        <member name="M:rendezvous_companion.Services.PrintManager.PrintKitchenSlipAsync(rendezvous_companion.Models.Order)">
+            <summary>
+            Print only the kitchen slip
+            </summary>
+        </member>
+        <member name="M:rendezvous_companion.Services.PrintManager.PrintReceiptAsync(rendezvous_companion.Models.Order)">
+            <summary>
+            Print only the customer receipt
+            </summary>
+        </member>
+        <member name="T:rendezvous_companion.Templates.EscPosCommands">
+            <summary>
+            ESC/POS command builder for 58mm thermal printers (Xprinter XP-58IIH)
+            384 dots per line, ~32 chars normal, ~16 chars large
+            </summary>
+        </member>
+        <member name="M:rendezvous_companion.Templates.EscPosCommands.OrderItemLine(System.String,System.Int32,System.Decimal)">
+            <summary>
+            Format an order item line: "Burger           1x  P150.00"
+            Total line width = 32 chars for 58mm
+            </summary>
+        </member>
+        <member name="M:rendezvous_companion.Templates.EscPosCommands.TotalLine(System.String,System.Decimal)">
+            <summary>
+            Format a total line: "TOTAL            P330.00"
+            </summary>
+        </member>
+        <member name="T:rendezvous_companion.Resource">
+            <summary>
+            Android Resource Designer class.
+            Exposes the Android Resource designer assembly into the project Namespace.
+            </summary>
+        </member>
+    </members>
+</doc>

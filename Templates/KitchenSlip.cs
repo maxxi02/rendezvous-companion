@@ -7,6 +7,15 @@ public static class KitchenSlip
 {
     public static byte[] Build(Order order)
     {
+        // Only print food items on the kitchen slip
+        var foodItems = order.Items
+            .Where(i => string.IsNullOrEmpty(i.MenuType) || i.MenuType.Equals("food", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        // Skip building the slip if there's nothing to cook
+        if (foodItems.Count == 0)
+            return Array.Empty<byte>();
+
         var parts = new List<byte[]>
         {
             Initialize,
@@ -38,8 +47,8 @@ public static class KitchenSlip
 
         parts.Add(Divider());
 
-        // Print each item with large text so kitchen can read easily
-        foreach (var item in order.Items)
+        // Print each food item with large text so kitchen can read easily
+        foreach (var item in foodItems)
         {
             parts.AddRange(new[]
             {

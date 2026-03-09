@@ -1,0 +1,7 @@
+<api type="release" assembly-name="InTheHand.AndroidActivity" mvid="04bad37094c54089905928396c91e096">
+  <module assembly-name="InTheHand.AndroidActivity" mvid="04bad37094c54089905928396c91e096" mvid-bytes="cNO6BMWUiUCQWSg5bJHglg==">
+    <types-scratch>
+      <entry key="crc64d920ea3f4476b6f9/ActivityLifecycleCallbacks" java-name="crc64d920ea3f4476b6f9/ActivityLifecycleCallbacks" managed-type-name="InTheHand.ActivityLifecycleCallbacks" token="33554436" />
+    </types-scratch>
+  </module>
+</api>

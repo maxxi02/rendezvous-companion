@@ -1,0 +1,9 @@
+<api type="release" assembly-name="InTheHand.Net.Bluetooth" mvid="48dbb953e74c45448d9bf371149bd612">
+  <module assembly-name="InTheHand.Net.Bluetooth" mvid="48dbb953e74c45448d9bf371149bd612" mvid-bytes="U7nbSEznREWNm/NxFJvWEg==">
+    <types-scratch>
+      <entry key="crc64b9ff3938fde5bc74/BluetoothUuidReceiver" java-name="crc64b9ff3938fde5bc74/BluetoothUuidReceiver" managed-type-name="InTheHand.Net.Bluetooth.BluetoothUuidReceiver" token="33554456" />
+      <entry key="crc64881974363b014be5/BluetoothDevicePickerReceiver" java-name="crc64881974363b014be5/BluetoothDevicePickerReceiver" managed-type-name="InTheHand.Net.Bluetooth.Droid.BluetoothDevicePickerReceiver" token="33554459" />
+      <entry key="crc64881974363b014be5/BluetoothDiscoveryReceiver" java-name="crc64881974363b014be5/BluetoothDiscoveryReceiver" managed-type-name="InTheHand.Net.Bluetooth.Droid.BluetoothDiscoveryReceiver" token="33554460" />
+    </types-scratch>
+  </module>
+</api>

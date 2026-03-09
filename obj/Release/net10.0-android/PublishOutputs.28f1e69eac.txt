@@ -1,0 +1,3 @@
+C:\Users\Aeron\OneDrive\Desktop\PASSOCON\Solarworks Project\rendezvous-companion\bin\Release\net10.0-android\publish\com.companyname.rendezvous_companion-Signed.apk
+C:\Users\Aeron\OneDrive\Desktop\PASSOCON\Solarworks Project\rendezvous-companion\bin\Release\net10.0-android\publish\com.companyname.rendezvous_companion.apk
+C:\Users\Aeron\OneDrive\Desktop\PASSOCON\Solarworks Project\rendezvous-companion\bin\Release\net10.0-android\publish\_Microsoft.Android.Resource.Designer.dll

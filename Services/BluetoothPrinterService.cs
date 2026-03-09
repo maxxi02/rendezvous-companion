@@ -16,34 +16,46 @@ public class BluetoothPrinterService : IPrinterService
         return await Task.Run(() =>
         {
             var devices = new List<PrinterDevice>();
-            var client = new BluetoothClient();
-
-            // 1. Get Paired Devices
-            var pairedDevices = client.PairedDevices;
-            foreach (var dev in pairedDevices)
+            
+            try 
             {
-                devices.Add(new PrinterDevice
-                {
-                    Id = dev.DeviceAddress.ToString(),
-                    Name = dev.DeviceName + " (Paired)",
-                    ConnectionType = PrinterConnectionType.Bluetooth
-                });
-            }
+                // If Bluetooth isn't supported or is turned off, return empty list immediately
+                if (BluetoothRadio.Default == null || BluetoothRadio.Default.Mode == RadioMode.PowerOff)
+                    return devices;
 
-            // 2. Discover New Devices
-            var discoveredDevices = client.DiscoverDevices();
-            foreach (var dev in discoveredDevices)
-            {
-                // Only add if not already in the list (from paired)
-                if (!devices.Any(d => d.Id == dev.DeviceAddress.ToString()))
+                var client = new BluetoothClient();
+
+                // 1. Get Paired Devices
+                var pairedDevices = client.PairedDevices;
+                foreach (var dev in pairedDevices)
                 {
                     devices.Add(new PrinterDevice
                     {
                         Id = dev.DeviceAddress.ToString(),
-                        Name = dev.DeviceName,
+                        Name = dev.DeviceName + " (Paired)",
                         ConnectionType = PrinterConnectionType.Bluetooth
                     });
                 }
+
+                // 2. Discover New Devices
+                var discoveredDevices = client.DiscoverDevices();
+                foreach (var dev in discoveredDevices)
+                {
+                    // Only add if not already in the list (from paired)
+                    if (!devices.Any(d => d.Id == dev.DeviceAddress.ToString()))
+                    {
+                        devices.Add(new PrinterDevice
+                        {
+                            Id = dev.DeviceAddress.ToString(),
+                            Name = dev.DeviceName,
+                            ConnectionType = PrinterConnectionType.Bluetooth
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"BT scan failed or not supported: {ex.Message}");
             }
 
             return devices;
