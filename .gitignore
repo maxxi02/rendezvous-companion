@@ -1,4 +1,15 @@
-# Add this to your .gitignore
+# Build outputs
 bin/
 obj/
+
+# APK files
 *.apk
+*.aab
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# macOS
+.DS_Store
