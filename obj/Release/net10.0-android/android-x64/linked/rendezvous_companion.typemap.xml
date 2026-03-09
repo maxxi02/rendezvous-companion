@@ -1,8 +1,0 @@
-<api type="release" assembly-name="rendezvous_companion" mvid="89720dff1ec14720ba543466515cef6c">
-  <module assembly-name="rendezvous_companion" mvid="89720dff1ec14720ba543466515cef6c" mvid-bytes="/w1yicEeIEe6VDRmUVzvbA==">
-    <types-scratch>
-      <entry key="crc64133f68d667423c24/MainActivity" java-name="crc64133f68d667423c24/MainActivity" managed-type-name="rendezvous_companion.MainActivity" token="33554444" />
-      <entry key="crc64133f68d667423c24/MainApplication" java-name="crc64133f68d667423c24/MainApplication" managed-type-name="rendezvous_companion.MainApplication" token="33554445" />
-    </types-scratch>
-  </module>
-</api>
