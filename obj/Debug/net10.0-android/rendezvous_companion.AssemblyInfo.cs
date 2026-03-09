@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("rendezvous_companion")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+ee42eaffa8d83d012ab2a8af880b84eff09a85e3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0+9cd14a6155ca24d7d709295295e48f441b161998")]
 [assembly: System.Reflection.AssemblyProductAttribute("rendezvous_companion")]
 [assembly: System.Reflection.AssemblyTitleAttribute("rendezvous_companion")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

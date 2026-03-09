@@ -5480,3 +5480,4 @@ C:\dev\solarworks-projects\rendezvous_companion\obj\Debug\net10.0-android\stamp\
 C:\dev\solarworks-projects\rendezvous_companion\obj\Debug\net10.0-android\stamp\_GenerateJavaStubs.stamp
 C:\dev\solarworks-projects\rendezvous_companion\obj\Debug\net10.0-android\stamp\_GeneratePackageManagerJava.stamp
 C:\dev\solarworks-projects\rendezvous_companion\obj\Debug\net10.0-android\stamp\_ResolveLibraryProjectImports.stamp
+C:\dev\solarworks-projects\rendezvous_companion\obj\Debug\net10.0-android\android\src\crc643f5e3a46e7490b67\CompanionForegroundService.java
