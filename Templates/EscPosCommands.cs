@@ -1,4 +1,6 @@
 using System.Text;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 
 namespace rendezvous_companion.Templates;
 
