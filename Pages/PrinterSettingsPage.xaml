@@ -343,6 +343,34 @@
           </Grid>
         </VerticalStackLayout>
       </Border>
+
+      <!-- Danger Zone / Exit -->
+      <Border
+        StrokeShape="RoundRectangle 12"
+        StrokeThickness="0"
+        BackgroundColor="{AppThemeBinding Light=#FFEBEB, Dark=#3D1B1B}"
+        Padding="20"
+        Margin="0, 10, 0, 0"
+      >
+        <VerticalStackLayout Spacing="12">
+          <Label Text="System Control" FontSize="18" FontAttributes="Bold" TextColor="#DC3545" />
+          <Label
+            Text="The companion app normally runs forever in the background to ensure your printers never disconnect. Use this button if you need to completely stop the app and its background service."
+            FontSize="13"
+            TextColor="{AppThemeBinding Light=#8B2121, Dark=#FFB3B3}"
+          />
+          <Button
+            Text="Shutdown App &amp; Service"
+            Clicked="OnExitAppClicked"
+            BackgroundColor="#DC3545"
+            TextColor="White"
+            CornerRadius="8"
+            HeightRequest="48"
+            FontAttributes="Bold"
+            Margin="0,10,0,0"
+          />
+        </VerticalStackLayout>
+      </Border>
     </VerticalStackLayout>
   </ScrollView>
 </ContentPage>

@@ -7,7 +7,9 @@ public static class CustomerReceipt
 {
     public static byte[] Build(Order order)
     {
-        var storeName = !string.IsNullOrEmpty(order.BusinessName) ? order.BusinessName : "RENDEZVOUS";
+        var storeName = !string.IsNullOrEmpty(order.BusinessName)
+            ? order.BusinessName
+            : "RENDEZVOUS";
         var storeAddress = order.BusinessAddress;
         var storeTel = order.BusinessPhone;
         var receiptMessage = order.ReceiptMessage;
@@ -15,15 +17,25 @@ public static class CustomerReceipt
         {
             // Initialize printer
             Initialize,
-
-            // Store header
-            AlignCenter,
-            BoldOn,
-            LargeFontOn,
-            Line(storeName),
-            NormalFont,
-            BoldOff,
         };
+
+        if (!string.IsNullOrEmpty(order.BusinessLogo))
+        {
+            parts.Add(Base64Image(order.BusinessLogo));
+        }
+
+        parts.AddRange(
+            new[]
+            {
+                // Store header
+                AlignCenter,
+                BoldOn,
+                LargeFontOn,
+                Line(storeName),
+                NormalFont,
+                BoldOff,
+            }
+        );
 
         if (!string.IsNullOrEmpty(storeAddress))
             parts.Add(Line(storeAddress));
@@ -31,16 +43,17 @@ public static class CustomerReceipt
         if (!string.IsNullOrEmpty(storeTel))
             parts.Add(Line($"Tel: {storeTel}"));
 
-        parts.AddRange(new[]
-        {
-            NewLine,
-            AlignLeft,
-            Divider(),
-
-            // Order info
-            Line($"Order #: {order.OrderNumber}"),
-            Line($"Date   : {order.OrderDate:MM/dd/yyyy h:mm tt}"),
-        });
+        parts.AddRange(
+            new[]
+            {
+                NewLine,
+                AlignLeft,
+                Divider(),
+                // Order info
+                Line($"Order #: {order.OrderNumber}"),
+                Line($"Date   : {order.OrderDate:MM/dd/yyyy h:mm tt}"),
+            }
+        );
 
         if (!string.IsNullOrEmpty(order.TableNumber))
             parts.Add(Line($"Table  : {order.TableNumber}"));
@@ -57,36 +70,33 @@ public static class CustomerReceipt
         foreach (var item in order.Items)
             parts.Add(OrderItemLine(item.Name, item.Quantity, item.Price));
 
-        parts.AddRange(new[]
-        {
-            Divider(),
-
-            // Totals
-            TotalLine("Subtotal", order.Subtotal),
-            TotalLine("Discount", order.DiscountTotal),
-            TotalLine("VAT (12%)", order.Tax),
-            BoldOn,
-            TotalLine("TOTAL", order.Total),
-            BoldOff,
-            NewLine,
-            TotalLine($"Paid via {order.PaymentMethod}", order.AmountPaid),
-            TotalLine("Change", order.Change),
-
-            Divider(),
-
-            // Footer
-            AlignCenter,
-            NewLine,
-            !string.IsNullOrEmpty(receiptMessage) ? Line(receiptMessage) : Line("Thank you for dining with us!"),
-            Line("Please come again :)"),
-            NewLine,
-            Line($"VAT Reg TIN: 000-000-000-000"),
-            NewLine,
-
-            // Feed and cut
-            FeedLines3,
-            CutPaper
-        });
+        parts.AddRange(
+            new[]
+            {
+                Divider(),
+                // Totals
+                TotalLine("Subtotal", order.Subtotal),
+                TotalLine("Discount", order.DiscountTotal),
+                BoldOn,
+                TotalLine("TOTAL", order.Total),
+                BoldOff,
+                NewLine,
+                TotalLine($"Paid via {order.PaymentMethod}", order.AmountPaid),
+                TotalLine("Change", order.Change),
+                Divider(),
+                // Footer
+                AlignCenter,
+                NewLine,
+                !string.IsNullOrEmpty(receiptMessage)
+                    ? Line(receiptMessage)
+                    : Line("Thank you for dining with us!"),
+                Line("Please come again :)"),
+                NewLine,
+                // Feed and cut
+                FeedLines3,
+                CutPaper,
+            }
+        );
 
         return Combine(parts.ToArray());
     }

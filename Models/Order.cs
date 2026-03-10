@@ -30,7 +30,7 @@ public class Order
 
     [JsonPropertyName("cashier")]
     public string Cashier { get; set; } = string.Empty;
-    
+
     // Payment
     [JsonPropertyName("subtotal")]
     public decimal Subtotal { get; set; }
@@ -60,6 +60,9 @@ public class Order
     [JsonPropertyName("businessName")]
     public string BusinessName { get; set; } = string.Empty;
 
+    [JsonPropertyName("businessLogo")]
+    public string BusinessLogo { get; set; } = string.Empty;
+
     [JsonPropertyName("businessAddress")]
     public string BusinessAddress { get; set; } = string.Empty;
 
@@ -68,7 +71,7 @@ public class Order
 
     [JsonPropertyName("receiptMessage")]
     public string ReceiptMessage { get; set; } = string.Empty;
-    
+
     // Queue
     [JsonPropertyName("queueStatus")]
     public string QueueStatus { get; set; } = "pending_payment";

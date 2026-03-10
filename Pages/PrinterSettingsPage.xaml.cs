@@ -233,4 +233,31 @@ public partial class PrinterSettingsPage : ContentPage
                 },
             },
         };
+
+    // ─── Danger Zone ────────────────────────────────────────────────
+
+    private async void OnExitAppClicked(object? sender, EventArgs e)
+    {
+        bool answer = await DisplayAlert(
+            "Shutdown App",
+            "Are you sure you want to stop the background service and exit the app? Your connected printers will be temporarily disconnected.",
+            "Yes, Shutdown",
+            "Cancel"
+        );
+
+        if (answer)
+        {
+            var appService =
+                Application.Current?.Handler.MauiContext?.Services.GetService<rendezvous_companion.Services.IAppService>();
+            appService?.StopAppAndService();
+
+            // Fully close the application wrapper
+            Application.Current?.Quit();
+
+            // As a fallback for Windows, force process exit if Quit doesn't terminate background threads
+#if WINDOWS
+            Environment.Exit(0);
+#endif
+        }
+    }
 }

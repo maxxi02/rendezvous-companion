@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Controls.Hosting;  // ← add this
-using Microsoft.Maui.Hosting;           // ← add this
+using Microsoft.Maui.Controls.Hosting; // ← add this
+using Microsoft.Maui.Hosting; // ← add this
 using rendezvous_companion.Pages;
 using rendezvous_companion.Services;
 
@@ -12,7 +12,7 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder();
         builder
-            .UseMauiApp<App>()          // ← change UseMaui() to UseMauiApp<App>()
+            .UseMauiApp<App>() // ← change UseMaui() to UseMauiApp<App>()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -23,6 +23,13 @@ public static class MauiProgram
         builder.Services.AddSingleton<SocketService>();
         builder.Services.AddTransient<OrdersPage>();
         builder.Services.AddTransient<PrinterSettingsPage>();
+
+#if ANDROID
+        builder.Services.AddSingleton<
+            rendezvous_companion.Services.IAppService,
+            rendezvous_companion.Platforms.Android.AndroidAppService
+        >();
+#endif
 
 #if DEBUG
         builder.Logging.AddDebug();
