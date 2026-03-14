@@ -81,6 +81,9 @@ public class ZReport
 
     [JsonPropertyName("showCashierSignature")]
     public bool ShowCashierSignature { get; set; }
+
+    [JsonPropertyName("isXReading")]
+    public bool IsXReading { get; set; }
 }
 
 public class ZReportDiscount

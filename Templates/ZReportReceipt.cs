@@ -27,7 +27,7 @@ public static class ZReportReceipt
 
         parts.Add(Divider());
         parts.Add(BoldOn);
-        parts.Add(Line("Z-READING REPORT"));
+        parts.Add(Line(report.IsXReading ? "X-READING REPORT" : "Z-READING REPORT"));
         parts.Add(BoldOff);
         parts.Add(Divider());
 
@@ -51,15 +51,18 @@ public static class ZReportReceipt
         parts.Add(
             FormatLine("Opened:", string.IsNullOrEmpty(report.OpenedAt) ? "—" : report.OpenedAt)
         );
-        parts.Add(
-            FormatLine("Closed:", string.IsNullOrEmpty(report.ClosedAt) ? "—" : report.ClosedAt)
-        );
+        if (!report.IsXReading)
+        {
+            parts.Add(
+                FormatLine("Closed:", string.IsNullOrEmpty(report.ClosedAt) ? "—" : report.ClosedAt)
+            );
+        }
 
         parts.Add(Divider());
 
-        // TODAY'S SALES
+        // TODAY'S SALES OR SALES SUMMARY
         parts.Add(AlignCenter);
-        parts.Add(Line("TODAY'S SALES"));
+        parts.Add(Line(report.IsXReading ? "SALES SUMMARY" : "TODAY'S SALES"));
         parts.Add(AlignLeft);
 
         parts.Add(FormatLine("Gross Sales:", FormatMoney(report.TotalSales)));
@@ -77,9 +80,9 @@ public static class ZReportReceipt
         parts.Add(BoldOff);
         parts.Add(Divider());
 
-        // CASH SUMMARY
+        // CASH SUMMARY OR CASH IN DRAWER
         parts.Add(AlignCenter);
-        parts.Add(Line("CASH SUMMARY"));
+        parts.Add(Line(report.IsXReading ? "CASH IN DRAWER" : "CASH SUMMARY"));
         parts.Add(AlignLeft);
 
         parts.Add(FormatLine("Opening Fund:", FormatMoney(report.OpeningFund)));
@@ -92,15 +95,19 @@ public static class ZReportReceipt
 
         parts.Add(BoldOn);
         parts.Add(FormatLine("EXPECTED CASH:", FormatMoney(report.ExpectedCash)));
-        parts.Add(FormatLine("COUNTED CASH:", FormatMoney(report.ActualCash)));
-        parts.Add(
-            FormatLine(
-                "DIFFERENCE:",
-                report.Difference < 0
-                    ? $"({FormatMoney(Math.Abs(report.Difference))})"
-                    : FormatMoney(report.Difference)
-            )
-        );
+        
+        if (!report.IsXReading)
+        {
+            parts.Add(FormatLine("COUNTED CASH:", FormatMoney(report.ActualCash)));
+            parts.Add(
+                FormatLine(
+                    "DIFFERENCE:",
+                    report.Difference < 0
+                        ? $"({FormatMoney(Math.Abs(report.Difference))})"
+                        : FormatMoney(report.Difference)
+                )
+            );
+        }
         parts.Add(BoldOff);
 
         parts.Add(Divider());
@@ -160,33 +167,39 @@ public static class ZReportReceipt
         parts.Add(Divider());
 
         // STATUS (BALANCED / SHORT / OVER)
-        parts.Add(AlignCenter);
-        parts.Add(BoldOn);
-        if (Math.Abs(report.Difference) < 0.01)
+        if (!report.IsXReading)
         {
-            parts.Add(Line("✓ BALANCED ✓"));
+            parts.Add(AlignCenter);
+            parts.Add(BoldOn);
+            if (Math.Abs(report.Difference) < 0.01)
+            {
+                parts.Add(Line("✓ BALANCED ✓"));
+            }
+            else if (report.Difference < 0)
+            {
+                parts.Add(Line($"! SHORT: ({FormatMoney(Math.Abs(report.Difference))}) !"));
+            }
+            else
+            {
+                parts.Add(Line($"! OVER: +{FormatMoney(report.Difference)} !"));
+            }
+            parts.Add(BoldOff);
+            parts.Add(Divider());
         }
-        else if (report.Difference < 0)
-        {
-            parts.Add(Line($"! SHORT: ({FormatMoney(Math.Abs(report.Difference))}) !"));
-        }
-        else
-        {
-            parts.Add(Line($"! OVER: +{FormatMoney(report.Difference)} !"));
-        }
-        parts.Add(BoldOff);
-        parts.Add(Divider());
 
-        // DAILY SUMMARY
+        // DAILY SUMMARY OR TRANSACTIONS
         parts.Add(AlignCenter);
-        parts.Add(Line("DAILY SUMMARY"));
+        parts.Add(Line(report.IsXReading ? "TRANSACTIONS" : "DAILY SUMMARY"));
         parts.Add(AlignLeft);
 
         parts.Add(FormatLine("Total Transactions:", report.Transactions.ToString()));
-        parts.Add(FormatLine("Total Items:", report.Items.ToString()));
-        parts.Add(BoldOn);
-        parts.Add(FormatLine("NET INCOME:", FormatMoney(report.NetSales)));
-        parts.Add(BoldOff);
+        if (!report.IsXReading)
+        {
+            parts.Add(FormatLine("Total Items:", report.Items.ToString()));
+            parts.Add(BoldOn);
+            parts.Add(FormatLine("NET INCOME:", FormatMoney(report.NetSales)));
+            parts.Add(BoldOff);
+        }
 
         parts.Add(Divider());
 
@@ -199,7 +212,7 @@ public static class ZReportReceipt
         }
 
         // Signatures
-        if (report.ShowCashierSignature)
+        if (!report.IsXReading && report.ShowCashierSignature)
         {
             parts.Add(Line(""));
             parts.Add(Line(""));
@@ -218,7 +231,7 @@ public static class ZReportReceipt
         }
 
         parts.Add(BoldOn);
-        parts.Add(Line("*** END OF Z-REPORT ***"));
+        parts.Add(Line(report.IsXReading ? "END OF X-REPORT" : "END OF Z-REPORT"));
         parts.Add(BoldOff);
 
         // Feed & Cut
