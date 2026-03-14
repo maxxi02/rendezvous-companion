@@ -1,38 +1,43 @@
 using System.IO.Ports;
-# if ANDROID
+#if ANDROID
 using Android.App;
 using Android.Content;
 using Android.Hardware.Usb;
 using Microsoft.Maui.ApplicationModel;
-# endif
+#endif
 
 namespace rendezvous_companion.Services;
 
 public class UsbPrinterService : IPrinterService
 {
-# if WINDOWS
+#if WINDOWS
     private SerialPort? _serialPort;
-# endif
-# if ANDROID
+#endif
+#if ANDROID
     private UsbDevice? _usbDevice;
     private UsbDeviceConnection? _usbConnection;
     private UsbEndpoint? _outEndpoint;
-# endif
+
+    // Static so that UnpairOthersAsync can close connections opened anywhere
+    private static readonly Dictionary<string, UsbDeviceConnection> _openConnections = new();
+#endif
 
     public bool IsConnected =>
-# if WINDOWS
+#if WINDOWS
         _serialPort?.IsOpen ?? false;
-# elif ANDROID
+#elif ANDROID
         _usbConnection != null;
-# else
+#else
         false;
-# endif
+#endif
+
+    // ─── GetAvailableDevicesAsync ──────────────────────────────────
 
     public async Task<List<PrinterDevice>> GetAvailableDevicesAsync()
     {
         var devices = new List<PrinterDevice>();
 
-# if WINDOWS
+#if WINDOWS
         await Task.Run(() =>
         {
             try
@@ -42,9 +47,10 @@ public class UsbPrinterService : IPrinterService
                 {
                     devices.Add(new PrinterDevice
                     {
-                        Id = port,
-                        Name = port,
-                        ConnectionType = PrinterConnectionType.USB
+                        Id             = port,
+                        Name           = port,
+                        ConnectionType = PrinterConnectionType.USB,
+                        IsPaired       = true   // COM ports are always accessible on Windows
                     });
                 }
             }
@@ -53,7 +59,7 @@ public class UsbPrinterService : IPrinterService
                 Console.WriteLine($"USB scan error: {ex.Message}");
             }
         });
-# elif ANDROID
+#elif ANDROID
         await Task.Run(() =>
         {
             var usbManager = (UsbManager?)Android.App.Application.Context.GetSystemService(Context.UsbService);
@@ -61,37 +67,126 @@ public class UsbPrinterService : IPrinterService
 
             foreach (var device in usbManager.DeviceList.Values)
             {
-                // Basic filter: look for printers or common vendor IDs if known, 
-                // but usually, we just list them if they have a bulk out endpoint.
                 devices.Add(new PrinterDevice
                 {
-                    Id = device.DeviceName,
-                    Name = $"{device.ProductName ?? "USB Device"} ({device.VendorId}:{device.ProductId})",
-                    ConnectionType = PrinterConnectionType.USB
+                    Id             = device.DeviceName,
+                    Name           = $"{device.ProductName ?? "USB Device"} ({device.VendorId}:{device.ProductId})",
+                    ConnectionType = PrinterConnectionType.USB,
+                    IsPaired       = usbManager.HasPermission(device)
                 });
             }
         });
-# else
+#else
         await Task.CompletedTask;
-# endif
+#endif
         return devices;
     }
 
+    // ─── PairAsync ────────────────────────────────────────────────
+    // Requests USB permission for the specified device via an Android
+    // BroadcastReceiver and waits for the system dialog result.
+
+    public async Task<bool> PairAsync(string deviceId)
+    {
+#if ANDROID
+        var usbManager = (UsbManager?)Android.App.Application.Context.GetSystemService(Context.UsbService);
+        if (usbManager?.DeviceList?.Values == null) return false;
+
+        var device = usbManager.DeviceList.Values.FirstOrDefault(d => d.DeviceName == deviceId);
+        if (device == null) return false;
+
+        // Already permitted
+        if (usbManager.HasPermission(device)) return true;
+
+        var tcs = new TaskCompletionSource<bool>();
+        const string actionPermission = "com.solarworks.USB_PERMISSION";
+
+        var receiver = new UsbPermissionReceiver(deviceId, tcs);
+        Android.App.Application.Context.RegisterReceiver(
+            receiver,
+            new IntentFilter(actionPermission)
+        );
+
+        try
+        {
+#pragma warning disable CA1416
+            var flags = Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.M
+                ? PendingIntentFlags.Immutable
+                : 0;
+            var intent = PendingIntent.GetBroadcast(
+                Android.App.Application.Context, 0,
+                new Intent(actionPermission),
+                flags
+            );
+            usbManager.RequestPermission(device, intent);
+#pragma warning restore CA1416
+
+            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            cts.Token.Register(() => tcs.TrySetResult(false));
+            return await tcs.Task;
+        }
+        finally
+        {
+            try { Android.App.Application.Context.UnregisterReceiver(receiver); }
+            catch { /* already unregistered */ }
+        }
+#else
+        await Task.CompletedTask;
+        return true;
+#endif
+    }
+
+    // ─── UnpairOthersAsync ────────────────────────────────────────
+    // Closes any open UsbDeviceConnection for every USB device except
+    // the keeper. Android does not expose a runtime permission revocation
+    // API, so releasing the connection is the best we can do.
+
+    public async Task UnpairOthersAsync(string keepDeviceId)
+    {
+#if ANDROID
+        await Task.Run(() =>
+        {
+            var toClose = _openConnections
+                .Where(kv => kv.Key != keepDeviceId)
+                .ToList();
+
+            foreach (var kv in toClose)
+            {
+                try
+                {
+                    kv.Value.Close();
+                    kv.Value.Dispose();
+                    Console.WriteLine($"[USB] Released connection: {kv.Key}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"[USB] Error releasing {kv.Key}: {ex.Message}");
+                }
+                _openConnections.Remove(kv.Key);
+            }
+        });
+#else
+        await Task.CompletedTask;
+#endif
+    }
+
+    // ─── ConnectAsync ─────────────────────────────────────────────
+
     public async Task<bool> ConnectAsync(string deviceId)
     {
-# if WINDOWS
+#if WINDOWS
         try
         {
             await Task.Run(() =>
             {
                 _serialPort = new SerialPort(deviceId)
                 {
-                    BaudRate = 9600,
-                    DataBits = 8,
-                    Parity = Parity.None,
-                    StopBits = StopBits.One,
+                    BaudRate    = 9600,
+                    DataBits    = 8,
+                    Parity      = Parity.None,
+                    StopBits    = StopBits.One,
                     ReadTimeout = 500,
-                    WriteTimeout = 500
+                    WriteTimeout= 500
                 };
                 _serialPort.Open();
             });
@@ -102,7 +197,7 @@ public class UsbPrinterService : IPrinterService
             Console.WriteLine($"USB Connection failed: {ex.Message}");
             return false;
         }
-# elif ANDROID
+#elif ANDROID
         try
         {
             var usbManager = (UsbManager?)Android.App.Application.Context.GetSystemService(Context.UsbService);
@@ -111,19 +206,10 @@ public class UsbPrinterService : IPrinterService
             _usbDevice = usbManager.DeviceList.Values.FirstOrDefault(d => d.DeviceName == deviceId);
             if (_usbDevice == null) return false;
 
-            // Simple permission check (in a real app, you might need a BroadcastReceiver for permission results)
             if (!usbManager.HasPermission(_usbDevice))
             {
-                // This will trigger the system popup
-                // Note: ConnectAsync might need to be retried by the user after they click OK
-#pragma warning disable CA1416
-                var flags = Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.M 
-                    ? PendingIntentFlags.Immutable 
-                    : 0;
-                var intent = PendingIntent.GetBroadcast(Android.App.Application.Context, 0, new Intent("com.solarworks.USB_PERMISSION"), flags);
-                usbManager.RequestPermission(_usbDevice, intent);
-#pragma warning restore CA1416
-                return false; 
+                Console.WriteLine("[USB] No permission — call PairAsync first.");
+                return false;
             }
 
             _usbConnection = usbManager.OpenDevice(_usbDevice);
@@ -139,6 +225,9 @@ public class UsbPrinterService : IPrinterService
                     {
                         _usbConnection.ClaimInterface(@interface, true);
                         _outEndpoint = endpoint;
+
+                        // Track the open connection for UnpairOthersAsync
+                        _openConnections[deviceId] = _usbConnection;
                         return true;
                     }
                 }
@@ -150,38 +239,45 @@ public class UsbPrinterService : IPrinterService
             Console.WriteLine($"USB Connection failed: {ex.Message}");
             return false;
         }
-# else
+#else
         await Task.CompletedTask;
         return false;
-# endif
+#endif
     }
+
+    // ─── DisconnectAsync ──────────────────────────────────────────
 
     public async Task DisconnectAsync()
     {
-# if WINDOWS
+#if WINDOWS
         await Task.Run(() =>
         {
             _serialPort?.Close();
             _serialPort?.Dispose();
             _serialPort = null;
         });
-# elif ANDROID
+#elif ANDROID
         await Task.Run(() =>
         {
+            if (_usbDevice != null)
+                _openConnections.Remove(_usbDevice.DeviceName);
+
             _usbConnection?.Close();
             _usbConnection?.Dispose();
-            _usbConnection = null;
-            _outEndpoint = null;
-            _usbDevice = null;
+            _usbConnection  = null;
+            _outEndpoint    = null;
+            _usbDevice      = null;
         });
-# else
+#else
         await Task.CompletedTask;
-# endif
+#endif
     }
+
+    // ─── PrintAsync ───────────────────────────────────────────────
 
     public async Task<bool> PrintAsync(byte[] data)
     {
-# if WINDOWS
+#if WINDOWS
         if (!IsConnected || _serialPort == null)
             return false;
         try
@@ -194,7 +290,7 @@ public class UsbPrinterService : IPrinterService
             Console.WriteLine($"USB Print failed: {ex.Message}");
             return false;
         }
-# elif ANDROID
+#elif ANDROID
         if (!IsConnected || _usbConnection == null || _outEndpoint == null)
             return false;
 
@@ -208,9 +304,39 @@ public class UsbPrinterService : IPrinterService
             Console.WriteLine($"USB Print failed: {ex.Message}");
             return false;
         }
-# else
+#else
         await Task.CompletedTask;
         return false;
-# endif
+#endif
     }
 }
+
+// ─── UsbPermissionReceiver (Android only) ─────────────────────────
+
+#if ANDROID
+/// <summary>
+/// Receives the USB permission grant/deny result and resolves the awaited TaskCompletionSource.
+/// </summary>
+internal class UsbPermissionReceiver : BroadcastReceiver
+{
+    private readonly string _deviceId;
+    private readonly TaskCompletionSource<bool> _tcs;
+
+    public UsbPermissionReceiver(string deviceId, TaskCompletionSource<bool> tcs)
+    {
+        _deviceId = deviceId;
+        _tcs      = tcs;
+    }
+
+    public override void OnReceive(Context? context, Intent? intent)
+    {
+        if (intent == null) return;
+
+        var device = (UsbDevice?)intent.GetParcelableExtra(UsbManager.ExtraDevice);
+        if (device == null || device.DeviceName != _deviceId) return;
+
+        bool granted = intent.GetBooleanExtra(UsbManager.ExtraPermissionGranted, false);
+        _tcs.TrySetResult(granted);
+    }
+}
+#endif

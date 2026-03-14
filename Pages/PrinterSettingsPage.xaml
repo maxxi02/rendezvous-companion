@@ -25,7 +25,7 @@
                 TextColor="{StaticResource Primary}"
               />
               <Label
-                Text="Scan for nearby Classic Bluetooth printers."
+                Text="Tap Scan, then use the Pair button to bond a new device."
                 FontSize="14"
                 TextColor="{StaticResource Gray500}"
               />
@@ -96,9 +96,32 @@
                             TextColor="White"
                           />
                         </Border>
+                        <!-- Paired badge — visible only when IsPaired=true -->
+                        <Border
+                          StrokeShape="RoundRectangle 4"
+                          BackgroundColor="#28a745"
+                          Padding="6,2"
+                          IsVisible="{Binding IsPaired}"
+                        >
+                          <Label Text="PAIRED" FontSize="10" FontAttributes="Bold" TextColor="White" />
+                        </Border>
                       </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                      <!-- Pair button — only when not yet paired -->
+                      <Button
+                        Text="Pair"
+                        CommandParameter="{Binding .}"
+                        Clicked="OnPairBluetoothClicked"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White"
+                        CornerRadius="6"
+                        FontSize="12"
+                        FontAttributes="Bold"
+                        Padding="12,6"
+                        IsVisible="{Binding IsPaired, Converter={StaticResource InverseBoolConverter}}"
+                      />
+                      <!-- Receipt / Kitchen — enabled only when paired -->
                       <Button
                         Text="Receipt"
                         CommandParameter="{Binding .}"
@@ -109,6 +132,8 @@
                         FontSize="12"
                         FontAttributes="Bold"
                         Padding="12,6"
+                        IsEnabled="{Binding IsPaired}"
+                        Opacity="{Binding IsPaired, Converter={StaticResource BoolToOpacityConverter}}"
                       />
                       <Button
                         Text="Kitchen"
@@ -120,6 +145,8 @@
                         FontSize="12"
                         FontAttributes="Bold"
                         Padding="12,6"
+                        IsEnabled="{Binding IsPaired}"
+                        Opacity="{Binding IsPaired, Converter={StaticResource BoolToOpacityConverter}}"
                       />
                     </HorizontalStackLayout>
                   </Grid>
@@ -142,7 +169,7 @@
             <VerticalStackLayout>
               <Label Text="USB Printers" FontSize="20" FontAttributes="Bold" TextColor="#198754" />
               <Label
-                Text="Connect your printer via USB OTG cable."
+                Text="Tap Scan, then use the Pair button to grant USB permission."
                 FontSize="14"
                 TextColor="{StaticResource Gray500}"
               />
@@ -208,9 +235,32 @@
                         >
                           <Label Text="USB" FontSize="10" FontAttributes="Bold" TextColor="White" />
                         </Border>
+                        <!-- Permission badge — visible only when IsPaired=true -->
+                        <Border
+                          StrokeShape="RoundRectangle 4"
+                          BackgroundColor="#28a745"
+                          Padding="6,2"
+                          IsVisible="{Binding IsPaired}"
+                        >
+                          <Label Text="PERMITTED" FontSize="10" FontAttributes="Bold" TextColor="White" />
+                        </Border>
                       </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                      <!-- Pair button — only when no permission yet -->
+                      <Button
+                        Text="Pair"
+                        CommandParameter="{Binding .}"
+                        Clicked="OnPairUsbClicked"
+                        BackgroundColor="#198754"
+                        TextColor="White"
+                        CornerRadius="6"
+                        FontSize="12"
+                        FontAttributes="Bold"
+                        Padding="12,6"
+                        IsVisible="{Binding IsPaired, Converter={StaticResource InverseBoolConverter}}"
+                      />
+                      <!-- Receipt / Kitchen — enabled only when permitted -->
                       <Button
                         Text="Receipt"
                         CommandParameter="{Binding .}"
@@ -221,6 +271,8 @@
                         FontSize="12"
                         FontAttributes="Bold"
                         Padding="12,6"
+                        IsEnabled="{Binding IsPaired}"
+                        Opacity="{Binding IsPaired, Converter={StaticResource BoolToOpacityConverter}}"
                       />
                       <Button
                         Text="Kitchen"
@@ -232,6 +284,8 @@
                         FontSize="12"
                         FontAttributes="Bold"
                         Padding="12,6"
+                        IsEnabled="{Binding IsPaired}"
+                        Opacity="{Binding IsPaired, Converter={StaticResource BoolToOpacityConverter}}"
                       />
                     </HorizontalStackLayout>
                   </Grid>

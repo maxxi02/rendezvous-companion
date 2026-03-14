@@ -34,8 +34,8 @@ public partial class PrinterSettingsPage : ContentPage
 
             BtScanStatusLabel.Text =
                 _btDevices.Count > 0
-                    ? $"Found {_btDevices.Count} Bluetooth device(s). Tap Receipt or Kitchen to assign."
-                    : "No Bluetooth devices found. Make sure your printer is paired and powered on.";
+                    ? $"Found {_btDevices.Count} device(s). Tap \"Pair\" on a new device, then assign it as Receipt or Kitchen."
+                    : "No Bluetooth devices found. Make sure your printer is powered on and discoverable.";
         }
         catch (Exception ex)
         {
@@ -65,12 +65,98 @@ public partial class PrinterSettingsPage : ContentPage
 
             UsbScanStatusLabel.Text =
                 _usbDevices.Count > 0
-                    ? $"Found {_usbDevices.Count} USB device(s). Tap Receipt or Kitchen to assign."
-                    : "No USB devices found. Make sure your printer is plugged in.";
+                    ? $"Found {_usbDevices.Count} USB device(s). Tap \"Pair\" to grant permission, then assign as Receipt or Kitchen."
+                    : "No USB devices found. Make sure your printer is plugged in via OTG cable.";
         }
         catch (Exception ex)
         {
             UsbScanStatusLabel.Text = $"USB scan error: {ex.Message}";
+        }
+        finally
+        {
+            UsbScanIndicator.IsVisible = false;
+            UsbScanIndicator.IsRunning = false;
+        }
+    }
+
+    // ─── Bluetooth Pairing ────────────────────────────────────────
+
+    private async void OnPairBluetoothClicked(object? sender, EventArgs e)
+    {
+        var device = GetDeviceFromButton(sender);
+        if (device == null) return;
+
+        BtScanStatusLabel.Text = $"Pairing with {device.Name}…";
+        BtScanIndicator.IsVisible = true;
+        BtScanIndicator.IsRunning = true;
+
+        try
+        {
+            var btService = new BluetoothPrinterService();
+            var paired = await btService.PairAsync(device.Id);
+
+            if (paired)
+            {
+                // Remove all other BT bonds so this is the only one
+                await btService.UnpairOthersAsync(device.Id);
+
+                // Refresh the list to update IsPaired badges
+                _btDevices = await btService.GetAvailableDevicesAsync();
+                BluetoothDevicesList.ItemsSource = _btDevices;
+
+                BtScanStatusLabel.Text = $"{device.Name} paired! Now tap Receipt or Kitchen to assign it.";
+            }
+            else
+            {
+                BtScanStatusLabel.Text = $"Pairing failed or was cancelled for {device.Name}.";
+            }
+        }
+        catch (Exception ex)
+        {
+            BtScanStatusLabel.Text = $"Pairing error: {ex.Message}";
+        }
+        finally
+        {
+            BtScanIndicator.IsVisible = false;
+            BtScanIndicator.IsRunning = false;
+        }
+    }
+
+    // ─── USB Pairing ──────────────────────────────────────────────
+
+    private async void OnPairUsbClicked(object? sender, EventArgs e)
+    {
+        var device = GetDeviceFromButton(sender);
+        if (device == null) return;
+
+        UsbScanStatusLabel.Text = $"Requesting USB permission for {device.Name}…";
+        UsbScanIndicator.IsVisible = true;
+        UsbScanIndicator.IsRunning = true;
+
+        try
+        {
+            var usbService = new UsbPrinterService();
+            var granted = await usbService.PairAsync(device.Id);
+
+            if (granted)
+            {
+                // Release USB claim on any other devices
+                await usbService.UnpairOthersAsync(device.Id);
+
+                // Refresh the list to update IsPaired (permission) badges
+                _usbDevices = await usbService.GetAvailableDevicesAsync();
+                UsbDevicesList.ItemsSource = _usbDevices;
+
+                UsbScanStatusLabel.Text = $"Permission granted for {device.Name}! Now tap Receipt or Kitchen.";
+            }
+            else
+            {
+                UsbScanStatusLabel.Text = $"Permission denied for {device.Name}.";
+            }
+        }
+        catch (Exception ex)
+        {
+            UsbScanStatusLabel.Text = $"USB permission error: {ex.Message}";
         }
         finally
         {
