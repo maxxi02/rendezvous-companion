@@ -73,6 +73,12 @@ public class ZReport
     [JsonPropertyName("items")]
     public int Items { get; set; }
 
+    [JsonPropertyName("presentAccumulatedSales")]
+    public double? PresentAccumulatedSales { get; set; }
+
+    [JsonPropertyName("previousAccumulatedSales")]
+    public double? PreviousAccumulatedSales { get; set; }
+
     [JsonPropertyName("receiptMessage")]
     public string ReceiptMessage { get; set; } = "";
 

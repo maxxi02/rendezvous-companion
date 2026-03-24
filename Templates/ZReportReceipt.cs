@@ -190,6 +190,18 @@ public static class ZReportReceipt
 
         parts.Add(Divider());
 
+        // ACCUMULATED SALES
+        if (report.PresentAccumulatedSales.HasValue)
+        {
+            parts.Add(AlignCenter);
+            parts.Add(Line("ACCUMULATED SALES"));
+            parts.Add(AlignLeft);
+
+            parts.Add(FormatLine("Previous:", FormatMoney(report.PreviousAccumulatedSales ?? 0)));
+            parts.Add(FormatLine("Current:", FormatMoney(report.PresentAccumulatedSales.Value)));
+            parts.Add(Divider());
+        }
+
         // Receipt Message
         parts.Add(AlignCenter);
         if (!string.IsNullOrEmpty(report.ReceiptMessage))
