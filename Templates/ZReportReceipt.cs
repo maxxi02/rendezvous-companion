@@ -51,18 +51,15 @@ public static class ZReportReceipt
         parts.Add(
             FormatLine("Opened:", string.IsNullOrEmpty(report.OpenedAt) ? "—" : report.OpenedAt)
         );
-        if (!report.IsXReading)
-        {
-            parts.Add(
-                FormatLine("Closed:", string.IsNullOrEmpty(report.ClosedAt) ? "—" : report.ClosedAt)
-            );
-        }
+        parts.Add(
+            FormatLine("Closed:", string.IsNullOrEmpty(report.ClosedAt) ? "—" : report.ClosedAt)
+        );
 
         parts.Add(Divider());
 
         // TODAY'S SALES OR SALES SUMMARY
         parts.Add(AlignCenter);
-        parts.Add(Line(report.IsXReading ? "SALES SUMMARY" : "TODAY'S SALES"));
+        parts.Add(Line("SALES SUMMARY"));
         parts.Add(AlignLeft);
 
         parts.Add(FormatLine("Gross Sales:", FormatMoney(report.TotalSales)));
@@ -82,7 +79,7 @@ public static class ZReportReceipt
 
         // CASH SUMMARY OR CASH IN DRAWER
         parts.Add(AlignCenter);
-        parts.Add(Line(report.IsXReading ? "CASH IN DRAWER" : "CASH SUMMARY"));
+        parts.Add(Line("CASH SUMMARY"));
         parts.Add(AlignLeft);
 
         parts.Add(FormatLine("Opening Fund:", FormatMoney(report.OpeningFund)));
@@ -95,19 +92,15 @@ public static class ZReportReceipt
 
         parts.Add(BoldOn);
         parts.Add(FormatLine("EXPECTED CASH:", FormatMoney(report.ExpectedCash)));
-        
-        if (!report.IsXReading)
-        {
-            parts.Add(FormatLine("COUNTED CASH:", FormatMoney(report.ActualCash)));
-            parts.Add(
-                FormatLine(
-                    "DIFFERENCE:",
-                    report.Difference < 0
-                        ? $"({FormatMoney(Math.Abs(report.Difference))})"
-                        : FormatMoney(report.Difference)
-                )
-            );
-        }
+        parts.Add(FormatLine("COUNTED CASH:", FormatMoney(report.ActualCash)));
+        parts.Add(
+            FormatLine(
+                "DIFFERENCE:",
+                report.Difference < 0
+                    ? $"({FormatMoney(Math.Abs(report.Difference))})"
+                    : FormatMoney(report.Difference)
+            )
+        );
         parts.Add(BoldOff);
 
         parts.Add(Divider());
@@ -167,39 +160,33 @@ public static class ZReportReceipt
         parts.Add(Divider());
 
         // STATUS (BALANCED / SHORT / OVER)
-        if (!report.IsXReading)
+        parts.Add(AlignCenter);
+        parts.Add(BoldOn);
+        if (Math.Abs(report.Difference) < 0.01)
         {
-            parts.Add(AlignCenter);
-            parts.Add(BoldOn);
-            if (Math.Abs(report.Difference) < 0.01)
-            {
-                parts.Add(Line("✓ BALANCED ✓"));
-            }
-            else if (report.Difference < 0)
-            {
-                parts.Add(Line($"! SHORT: ({FormatMoney(Math.Abs(report.Difference))}) !"));
-            }
-            else
-            {
-                parts.Add(Line($"! OVER: +{FormatMoney(report.Difference)} !"));
-            }
-            parts.Add(BoldOff);
-            parts.Add(Divider());
+            parts.Add(Line("✓ BALANCED ✓"));
         }
+        else if (report.Difference < 0)
+        {
+            parts.Add(Line($"! SHORT: ({FormatMoney(Math.Abs(report.Difference))}) !"));
+        }
+        else
+        {
+            parts.Add(Line($"! OVER: +{FormatMoney(report.Difference)} !"));
+        }
+        parts.Add(BoldOff);
+        parts.Add(Divider());
 
         // DAILY SUMMARY OR TRANSACTIONS
         parts.Add(AlignCenter);
-        parts.Add(Line(report.IsXReading ? "TRANSACTIONS" : "DAILY SUMMARY"));
+        parts.Add(Line("DAILY SUMMARY"));
         parts.Add(AlignLeft);
 
         parts.Add(FormatLine("Total Transactions:", report.Transactions.ToString()));
-        if (!report.IsXReading)
-        {
-            parts.Add(FormatLine("Total Items:", report.Items.ToString()));
-            parts.Add(BoldOn);
-            parts.Add(FormatLine("NET INCOME:", FormatMoney(report.NetSales)));
-            parts.Add(BoldOff);
-        }
+        parts.Add(FormatLine("Total Items:", report.Items.ToString()));
+        parts.Add(BoldOn);
+        parts.Add(FormatLine("NET INCOME:", FormatMoney(report.NetSales)));
+        parts.Add(BoldOff);
 
         parts.Add(Divider());
 
@@ -212,7 +199,7 @@ public static class ZReportReceipt
         }
 
         // Signatures
-        if (!report.IsXReading && report.ShowCashierSignature)
+        if (report.ShowCashierSignature)
         {
             parts.Add(Line(""));
             parts.Add(Line(""));

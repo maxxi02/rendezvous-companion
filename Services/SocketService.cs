@@ -19,9 +19,11 @@ public class SocketService
 
     public SocketService()
     {
-        // ⚠️ Replace with your server's LAN IP (find it with `ipconfig` on Windows)
-        // Must be reachable from the Android device on the same network
-        _serverUrl = "https://rendezvous-server-gpmv.onrender.com";
+        // 🔧 LOCAL DEV: Socket server on this machine (port 8080)
+        // For Android device on same WiFi, use LAN IP instead: e.g. "http://192.168.1.x:8080"
+        // For Android emulator, use: "http://10.0.2.2:8080"
+        // ⚠️ PRODUCTION: switch back to "https://rendezvous-server-gpmv.onrender.com"
+        _serverUrl = "http://192.168.1.15:8080";
 
         _client = new SocketIOClient.SocketIO(
             _serverUrl,
