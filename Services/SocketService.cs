@@ -23,7 +23,7 @@ public class SocketService
         // For Android device on same WiFi, use LAN IP instead: e.g. "http://192.168.1.x:8080"
         // For Android emulator, use: "http://10.0.2.2:8080"
         // ⚠️ PRODUCTION: switch back to "https://rendezvous-server-gpmv.onrender.com"
-        _serverUrl = "http://192.168.1.15:8080";
+        _serverUrl = "https://rendezvous-server-gpmv.onrender.com";
 
         _client = new SocketIOClient.SocketIO(
             _serverUrl,
