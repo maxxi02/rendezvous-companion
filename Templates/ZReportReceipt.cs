@@ -114,17 +114,20 @@ public static class ZReportReceipt
         {
             var tenderLabels = new Dictionary<string, string>
             {
-                { "cash", "CASH" },
+                { "cash",        "CASH" },
+                { "gcash",       "GCASH" },
+                { "split",       "SPLIT (Cash+GCash)" },
                 { "credit_card", "CREDIT" },
-                { "pay_later", "PY LTR" },
-                { "online", "ONLINE" },
-                { "invoice", "INVOICE" },
-                { "e_wallet", "EWALLET" },
-                { "pay_in", "PAYIN" },
+                { "pay_later",   "PY LTR" },
+                { "online",      "ONLINE" },
+                { "invoice",     "INVOICE" },
+                { "e_wallet",    "EWALLET" },
+                { "pay_in",      "PAYIN" },
             };
 
             foreach (var kvp in report.Tenders)
             {
+                if (kvp.Value <= 0) continue; // skip zero-value tenders
                 var label = tenderLabels.TryGetValue(kvp.Key, out string? tlbl)
                     ? tlbl
                     : kvp.Key.ToUpper();
