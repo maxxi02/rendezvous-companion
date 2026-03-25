@@ -50,6 +50,9 @@ public class Order
     [JsonPropertyName("paymentMethod")]
     public string PaymentMethod { get; set; } = "cash";
 
+    [JsonPropertyName("splitPayment")]
+    public SplitPayment? SplitPayment { get; set; }
+
     [JsonPropertyName("paymentStatus")]
     public string PaymentStatus { get; set; } = "pending";
 
@@ -100,4 +103,13 @@ public class OrderItem
     public string MenuType { get; set; } = "food"; // "food" or "drink"
 
     public decimal TotalSum => Quantity * Price;
+}
+
+public class SplitPayment
+{
+    [JsonPropertyName("cash")]
+    public decimal Cash { get; set; }
+
+    [JsonPropertyName("gcash")]
+    public decimal Gcash { get; set; }
 }

@@ -81,8 +81,32 @@ public static class CustomerReceipt
                 TotalLine("TOTAL", order.Total),
                 BoldOff,
                 NewLine,
-                TotalLine($"Paid via {order.PaymentMethod}", order.AmountPaid),
-                TotalLine("Change", order.Change),
+            }
+        );
+
+        // Payment section — dynamic per method
+        var paymentLabel = order.PaymentMethod?.ToLower() switch
+        {
+            "split" => "Cash + GCash (Split)",
+            "gcash" => "GCash",
+            _ => "Cash",
+        };
+        parts.Add(TotalLine($"Paid via {paymentLabel}", order.Total));
+
+        if (order.PaymentMethod?.ToLower() == "split" && order.SplitPayment != null)
+        {
+            parts.Add(Line($"  Cash  : P{order.SplitPayment.Cash:F2}"));
+            parts.Add(Line($"  GCash : P{order.SplitPayment.Gcash:F2}"));
+        }
+        else if (order.PaymentMethod?.ToLower() == "cash")
+        {
+            parts.Add(TotalLine("Tendered", order.AmountPaid));
+            parts.Add(TotalLine("Change", order.Change));
+        }
+
+        parts.AddRange(
+            new[]
+            {
                 Divider(),
                 // Footer
                 AlignCenter,
