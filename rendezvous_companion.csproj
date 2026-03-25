@@ -51,6 +51,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<!-- Exclude JsonTest scratch project from MAUI build -->
+		<Compile Remove="JsonTest\**" />
+		<None Include="JsonTest\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.png" Color="#B85C38" />
 
