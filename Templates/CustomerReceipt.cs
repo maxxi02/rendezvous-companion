@@ -80,29 +80,48 @@ public static class CustomerReceipt
                 BoldOn,
                 TotalLine("TOTAL", order.Total),
                 BoldOff,
-                NewLine,
+                Divider(),
             }
         );
 
-        // Payment section — dynamic per method
-        var paymentLabel = order.PaymentMethod?.ToLower() switch
-        {
-            "split" => "Cash + GCash (Split)",
-            "gcash" => "GCash",
-            _ => "Cash",
-        };
-        parts.Add(TotalLine($"Paid via {paymentLabel}", order.Total));
+        // ── Payment Method section ──────────────────────────────────
+        var method = order.PaymentMethod?.ToLower() ?? "cash";
 
-        if (order.PaymentMethod?.ToLower() == "split" && order.SplitPayment != null)
+        if (method == "split" && order.SplitPayment != null)
         {
-            parts.Add(Line($"  Cash  : P{order.SplitPayment.Cash:F2}"));
-            parts.Add(Line($"  GCash : P{order.SplitPayment.Gcash:F2}"));
+            parts.Add(Line("Payment Method:"));
+            parts.Add(TotalLine("  Cash:", order.SplitPayment.Cash));
+            parts.Add(TotalLine("  GCash:", order.SplitPayment.Gcash));
+            parts.Add(Divider());
+            parts.Add(BoldOn);
+            parts.Add(TotalLine("Total:", order.Total));
+            parts.Add(BoldOff);
+            // Change = any cash overpayment (usually 0 for split)
+            var splitChange = order.AmountPaid > order.Total ? order.AmountPaid - order.Total : 0m;
+            parts.Add(TotalLine("Change:", splitChange));
         }
-        else if (order.PaymentMethod?.ToLower() == "cash")
+        else if (method == "gcash")
         {
-            parts.Add(TotalLine("Tendered", order.AmountPaid));
-            parts.Add(TotalLine("Change", order.Change));
+            parts.Add(Line("Payment Method:"));
+            parts.Add(TotalLine("  GCash:", order.Total));
+            parts.Add(Divider());
+            parts.Add(BoldOn);
+            parts.Add(TotalLine("Total:", order.Total));
+            parts.Add(BoldOff);
         }
+        else
+        {
+            // Cash
+            parts.Add(Line("Payment Method:"));
+            parts.Add(TotalLine("  Cash:", order.AmountPaid));
+            parts.Add(Divider());
+            parts.Add(BoldOn);
+            parts.Add(TotalLine("Total:", order.Total));
+            parts.Add(BoldOff);
+            parts.Add(TotalLine("Change:", order.Change));
+        }
+
+        parts.Add(Divider());
 
         parts.AddRange(
             new[]
