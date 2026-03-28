@@ -13,6 +13,14 @@ public class Order
     [JsonPropertyName("createdAt")]
     public DateTime OrderDate { get; set; } = DateTime.Now;
 
+    // POS sends "timestamp" for new orders (print:request path)
+    // This overwrites OrderDate if provided (takes priority over "createdAt")
+    [JsonPropertyName("timestamp")]
+    public DateTime? Timestamp
+    {
+        set { if (value.HasValue) OrderDate = value.Value; }
+    }
+
     [JsonPropertyName("tableNumber")]
     public string TableNumber { get; set; } = string.Empty;
 
@@ -75,6 +83,10 @@ public class Order
     [JsonPropertyName("receiptMessage")]
     public string ReceiptMessage { get; set; } = string.Empty;
 
+    // Reprint flag (sent from POS when reprinting an existing receipt)
+    [JsonPropertyName("isReprint")]
+    public bool IsReprint { get; set; } = false;
+
     // Queue
     [JsonPropertyName("queueStatus")]
     public string QueueStatus { get; set; } = "pending_payment";
@@ -98,6 +110,9 @@ public class OrderItem
 
     [JsonPropertyName("notes")]
     public string Notes { get; set; } = string.Empty;
+
+    [JsonPropertyName("hasDiscount")]
+    public bool HasDiscount { get; set; } = false;
 
     [JsonPropertyName("menuType")]
     public string MenuType { get; set; } = "food"; // "food" or "drink"

@@ -55,6 +55,9 @@ public class ZReport
     [JsonPropertyName("expectedCash")]
     public double ExpectedCash { get; set; }
 
+    [JsonPropertyName("cashOuts")]
+    public double CashOuts { get; set; }
+
     [JsonPropertyName("actualCash")]
     public double ActualCash { get; set; }
 

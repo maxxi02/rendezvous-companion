@@ -19,6 +19,18 @@ public static class CustomerReceipt
             Initialize,
         };
 
+        // Show REPRINT banner at the top if applicable
+        if (order.IsReprint)
+        {
+            parts.AddRange(new[]
+            {
+                AlignCenter,
+                BoldOn,
+                Line("*** REPRINT ***"),
+                BoldOff,
+            });
+        }
+
         if (!string.IsNullOrEmpty(order.BusinessLogo))
         {
             parts.Add(Base64Image(order.BusinessLogo));
@@ -68,7 +80,12 @@ public static class CustomerReceipt
 
         // Order items
         foreach (var item in order.Items)
-            parts.Add(OrderItemLine(item.Name, item.Quantity, item.Price));
+        {
+            var effectivePrice = item.HasDiscount ? item.Price * 0.8m : item.Price;
+            parts.Add(OrderItemLine(item.Name, item.Quantity, effectivePrice));
+            if (item.HasDiscount)
+                parts.Add(Line("  [20% Senior/PWD Discount]"));
+        }
 
         parts.AddRange(
             new[]

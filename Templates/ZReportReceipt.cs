@@ -85,6 +85,9 @@ public static class ZReportReceipt
         parts.Add(FormatLine("Opening Fund:", FormatMoney(report.OpeningFund)));
         parts.Add(FormatLine("Cash Sales:", FormatMoney(report.CashEarned)));
 
+        if (report.CashOuts > 0)
+            parts.Add(FormatLine("Payouts:", "-" + FormatMoney(report.CashOuts)));
+
         if (report.TotalRefunds > 0)
             parts.Add(FormatLine("Cash Refunds:", "-" + FormatMoney(report.TotalRefunds)));
 
@@ -112,11 +115,14 @@ public static class ZReportReceipt
 
         if (report.Tenders != null && report.Tenders.Count > 0)
         {
+            // cash and gcash tenders already include their respective portions
+            // from split payments. We show them with a note if there were split orders.
+            var hasSplit = report.Tenders.TryGetValue("split", out double splitTotal) && splitTotal > 0;
+
             var tenderLabels = new Dictionary<string, string>
             {
-                { "cash",        "CASH" },
-                { "gcash",       "GCASH" },
-                { "split",       "SPLIT (Cash+GCash)" },
+                { "cash",        hasSplit ? "CASH (incl. Split)" : "CASH" },
+                { "gcash",       hasSplit ? "GCASH (incl. Split)" : "GCASH" },
                 { "credit_card", "CREDIT" },
                 { "pay_later",   "PY LTR" },
                 { "online",      "ONLINE" },
@@ -127,7 +133,9 @@ public static class ZReportReceipt
 
             foreach (var kvp in report.Tenders)
             {
-                if (kvp.Value <= 0) continue; // skip zero-value tenders
+                // skip the raw "split" key — its amounts are already in cash/gcash
+                if (kvp.Key == "split") continue;
+                if (kvp.Value <= 0) continue;
                 var label = tenderLabels.TryGetValue(kvp.Key, out string? tlbl)
                     ? tlbl
                     : kvp.Key.ToUpper();
