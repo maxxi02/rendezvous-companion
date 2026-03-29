@@ -121,8 +121,9 @@ public static class ZReportReceipt
 
             var tenderLabels = new Dictionary<string, string>
             {
-                { "cash",        hasSplit ? "CASH (incl. Split)" : "CASH" },
-                { "gcash",       hasSplit ? "GCASH (incl. Split)" : "GCASH" },
+                { "cash",        "CASH" },
+                { "gcash",       "GCASH" },
+                { "split",       "SPLIT" },
                 { "credit_card", "CREDIT" },
                 { "pay_later",   "PY LTR" },
                 { "online",      "ONLINE" },
@@ -133,8 +134,7 @@ public static class ZReportReceipt
 
             foreach (var kvp in report.Tenders)
             {
-                // skip the raw "split" key — its amounts are already in cash/gcash
-                if (kvp.Key == "split") continue;
+
                 if (kvp.Value <= 0) continue;
                 var label = tenderLabels.TryGetValue(kvp.Key, out string? tlbl)
                     ? tlbl

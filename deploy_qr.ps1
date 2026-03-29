@@ -9,13 +9,13 @@ $ApkDir = "bin\Release\net10.0-android\publish"
 if (-not (Test-Path $ApkDir)) {
     $ApkDir = "bin\Release\net10.0-android\android-arm64\publish"
     if (-not (Test-Path $ApkDir)) {
-        Write-Error "Hindi mahanap ang built APK. Paki-run muna ang dotnet publish."
+        Write-Error "Built APK not found. Please run dotnet publish first."
         exit 1
     }
 }
 
 # Stop old background jobs
-Get-Job -Subscript *serve* -ErrorAction SilentlyContinue | Stop-Job -PassThru | Remove-Job
+Get-Job -Name *serve* -ErrorAction SilentlyContinue | Stop-Job -PassThru | Remove-Job
 
 $IP = (Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.InterfaceAlias -notmatch '(Loopback|Pseudo)' } | Select-Object -First 1).IPAddress
 $LocalUrl = "http://${IP}:8080"
@@ -27,7 +27,7 @@ $Job = Start-Job -Name "serve" -ScriptBlock {
 }
 
 Write-Host ""
-Write-Host "📱 I-SCAN ANG QR CODE NA ITO GAMIT ANG CAMERA NG PHONE MO 📱" -ForegroundColor Yellow
+Write-Host "📱 SCAN THIS QR CODE USING YOUR PHONE CAMERA 📱" -ForegroundColor Yellow
 Write-Host "URL: $LocalUrl" -ForegroundColor Cyan
 Write-Host "================================================================" -ForegroundColor Green
 
@@ -36,7 +36,7 @@ npx qrcode-terminal $LocalUrl
 
 Write-Host "================================================================" -ForegroundColor Green
 Write-Host ""
-Write-Host "PAG NA-DOWNLOAD MO NA, HUWAG KALIMUTAN: Pindutin ang Ctrl+C para i-stop ang server."
+Write-Host "AFTER DOWNLOADING, DON'T FORGET: Press Ctrl+C to stop the server."
 Write-Host ""
 
 # Keep script running so user can see QR code

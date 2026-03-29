@@ -1,0 +1,8 @@
+C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\bin\Debug\net10.0-android\com.companyname.rendezvous_companion-Signed.apk
+C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\bin\Debug\net10.0-android\com.companyname.rendezvous_companion.apk
+C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\bin\Release\net10.0-android\com.companyname.rendezvous_companion-Signed.apk
+C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\bin\Release\net10.0-android\com.companyname.rendezvous_companion.apk
+C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\bin\Release\net10.0-android\publish\com.companyname.rendezvous_companion-Signed.apk
+C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\bin\Release\net10.0-android\publish\com.companyname.rendezvous_companion.apk
+C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\obj\Debug\net10.0-android\android\bin\com.companyname.rendezvous_companion.apk
+C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\obj\Release\net10.0-android\android\bin\com.companyname.rendezvous_companion.apk
