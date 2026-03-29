@@ -1,0 +1,13 @@
+﻿  Determining projects to restore...
+  All projects are up-to-date for restore.
+  XAML source generation is enabled (MauiXamlInflator=SourceGen). This generates C# code from XAML at compile time for better performance. To disable, remove the MauiXamlInflator line from your .csproj file (reverts to configuration-based defaults: Runtime in Debug, XamlC in Release).
+  rendezvous_companion -> C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\bin\Debug\net10.0-android\rendezvous_companion.dll
+C:\Program Files\dotnet\packs\Microsoft.Android.Sdk.Windows\36.1.43\tools\Xamarin.Android.Common.Debugging.targets(333,5): error XA0010: No available device. [C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\rendezvous_companion.csproj::TargetFramework=net10.0-android]
+
+Build FAILED.
+
+C:\Program Files\dotnet\packs\Microsoft.Android.Sdk.Windows\36.1.43\tools\Xamarin.Android.Common.Debugging.targets(333,5): error XA0010: No available device. [C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\rendezvous_companion.csproj::TargetFramework=net10.0-android]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:01.59
