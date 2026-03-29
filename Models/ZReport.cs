@@ -13,6 +13,9 @@ public class ZReport
     [JsonPropertyName("taxPin")]
     public string TaxPin { get; set; } = "";
 
+    [JsonPropertyName("businessLogo")]
+    public string BusinessLogo { get; set; } = "";
+
     [JsonPropertyName("today")]
     public string Today { get; set; } = "";
 
