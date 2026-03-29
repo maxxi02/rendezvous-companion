@@ -95,6 +95,9 @@ public static class ZReportReceipt
         parts.Add(FormatLine("Opening Fund:", FormatMoney(report.OpeningFund)));
         parts.Add(FormatLine("Cash Sales:", FormatMoney(report.CashEarned)));
 
+        if (report.GCashEarned > 0)
+            parts.Add(FormatLine("GCash Sales:", FormatMoney(report.GCashEarned)));
+
         if (report.CashOuts > 0)
             parts.Add(FormatLine("Payouts:", "-" + FormatMoney(report.CashOuts)));
 

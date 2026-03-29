@@ -55,6 +55,9 @@ public class ZReport
     [JsonPropertyName("cashEarned")]
     public double CashEarned { get; set; }
 
+    [JsonPropertyName("gcashEarned")]
+    public double GCashEarned { get; set; }
+
     [JsonPropertyName("expectedCash")]
     public double ExpectedCash { get; set; }
 
