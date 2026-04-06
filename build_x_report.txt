@@ -1,0 +1,11 @@
+﻿  Determining projects to restore...
+  Restored C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\rendezvous_companion.csproj (in 1.58 sec).
+C:\Program Files\dotnet\sdk\10.0.201\Sdks\Microsoft.NET.Sdk\targets\Microsoft.PackageDependencyResolution.targets(266,5): error NETSDK1005: Assets file 'C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\obj\project.assets.json' doesn't have a target for 'net9.0-android'. Ensure that restore has run and that you have included 'net9.0-android' in the TargetFrameworks for your project. [C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\rendezvous_companion.csproj::TargetFramework=net9.0-android]
+
+Build FAILED.
+
+C:\Program Files\dotnet\sdk\10.0.201\Sdks\Microsoft.NET.Sdk\targets\Microsoft.PackageDependencyResolution.targets(266,5): error NETSDK1005: Assets file 'C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\obj\project.assets.json' doesn't have a target for 'net9.0-android'. Ensure that restore has run and that you have included 'net9.0-android' in the TargetFrameworks for your project. [C:\Users\USER\Desktop\solarworks-pos-serverless\rendezvous-companion\rendezvous_companion.csproj::TargetFramework=net9.0-android]
+    0 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:00.42

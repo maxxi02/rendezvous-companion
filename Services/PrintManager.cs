@@ -181,28 +181,37 @@ public class PrintManager
     }
 
     /// <summary>
-    /// Print a Z-Reading report
+    /// Print a Z-Reading or X-Reading report.
+    /// X and Z use separate templates for distinct formatting.
     /// </summary>
     public async Task<bool> PrintZReportAsync(ZReport report)
     {
         if (_receiptPrinter?.IsConnected != true)
         {
             Console.WriteLine(
-                "[PrintManager] Cannot print Z-Report: Receipt printer is not connected."
+                "[PrintManager] Cannot print report: Receipt printer is not connected."
             );
             return false;
         }
 
         try
         {
-            var data = ZReportReceipt.Build(report);
+            // Route to the correct template based on report type
+            byte[] data = report.IsXReading
+                ? XReportReceipt.Build(report)   // X-Reading: simpler mid-session format
+                : ZReportReceipt.Build(report);  // Z-Reading: full end-of-day format
+
             bool success = await _receiptPrinter.PrintAsync(data);
-            Console.WriteLine($"[PrintManager] PrintZReportAsync result: {success}");
+            Console.WriteLine(
+                $"[PrintManager] Print{(report.IsXReading ? "X" : "Z")}ReportAsync result: {success}"
+            );
             return success;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[PrintManager] Error building/printing Z-Report: {ex.Message}");
+            Console.WriteLine(
+                $"[PrintManager] Error building/printing {(report.IsXReading ? "X" : "Z")}-Report: {ex.Message}"
+            );
             return false;
         }
     }
