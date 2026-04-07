@@ -13,13 +13,22 @@ public partial class PrinterSettingsPage : ContentPage
     {
         InitializeComponent();
         _printManager = printManager;
-
         UpdateRoleSummary();
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        // Auto-scan both Bluetooth and USB when the page opens
+        await Task.WhenAll(ScanBluetoothAsync(), ScanUsbAsync());
     }
 
     // ─── Bluetooth Scan ───────────────────────────────────────────
 
     private async void OnScanBluetoothClicked(object? sender, EventArgs e)
+        => await ScanBluetoothAsync();
+
+    private async Task ScanBluetoothAsync()
     {
         BtScanIndicator.IsVisible = true;
         BtScanIndicator.IsRunning = true;
@@ -32,10 +41,9 @@ public partial class PrinterSettingsPage : ContentPage
             _btDevices = await btService.GetAvailableDevicesAsync();
             BluetoothDevicesList.ItemsSource = _btDevices;
 
-            BtScanStatusLabel.Text =
-                _btDevices.Count > 0
-                    ? $"Found {_btDevices.Count} device(s). Tap \"Pair\" on a new device, then assign it as Receipt or Kitchen."
-                    : "No Bluetooth devices found. Make sure your printer is powered on and discoverable.";
+            BtScanStatusLabel.Text = _btDevices.Count > 0
+                ? $"Found {_btDevices.Count} device(s). Tap \"Pair\" on a new device, then assign it as Receipt or Kitchen."
+                : "No Bluetooth devices found. Make sure your printer is powered on and discoverable.";
         }
         catch (Exception ex)
         {
@@ -51,6 +59,9 @@ public partial class PrinterSettingsPage : ContentPage
     // ─── USB Scan ─────────────────────────────────────────────────
 
     private async void OnScanUsbClicked(object? sender, EventArgs e)
+        => await ScanUsbAsync();
+
+    private async Task ScanUsbAsync()
     {
         UsbScanIndicator.IsVisible = true;
         UsbScanIndicator.IsRunning = true;
@@ -63,10 +74,9 @@ public partial class PrinterSettingsPage : ContentPage
             _usbDevices = await usbService.GetAvailableDevicesAsync();
             UsbDevicesList.ItemsSource = _usbDevices;
 
-            UsbScanStatusLabel.Text =
-                _usbDevices.Count > 0
-                    ? $"Found {_usbDevices.Count} USB device(s). Tap \"Pair\" to grant permission, then assign as Receipt or Kitchen."
-                    : "No USB devices found. Make sure your printer is plugged in via OTG cable.";
+            UsbScanStatusLabel.Text = _usbDevices.Count > 0
+                ? $"Found {_usbDevices.Count} USB device(s). Tap \"Pair\" to grant permission, then assign as Receipt or Kitchen."
+                : "No USB devices found. Make sure your printer is plugged in via OTG cable.";
         }
         catch (Exception ex)
         {
