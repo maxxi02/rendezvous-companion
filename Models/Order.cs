@@ -11,14 +11,24 @@ public class Order
     public string OrderNumber { get; set; } = string.Empty;
 
     [JsonPropertyName("createdAt")]
-    public DateTime OrderDate { get; set; } = DateTime.Now;
+    public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
     // POS sends "timestamp" for new orders (print:request path)
     // This overwrites OrderDate if provided (takes priority over "createdAt")
+    // Always treat incoming dates as UTC so ToLocalTime() works correctly.
     [JsonPropertyName("timestamp")]
     public DateTime? Timestamp
     {
-        set { if (value.HasValue) OrderDate = value.Value; }
+        set
+        {
+            if (value.HasValue)
+            {
+                var dt = value.Value;
+                OrderDate = dt.Kind == DateTimeKind.Unspecified
+                    ? DateTime.SpecifyKind(dt, DateTimeKind.Utc)
+                    : dt;
+            }
+        }
     }
 
     [JsonPropertyName("tableNumber")]
