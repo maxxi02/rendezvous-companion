@@ -7,47 +7,34 @@ public static class CustomerReceipt
 {
     public static byte[] Build(Order order)
     {
-        var storeName = !string.IsNullOrEmpty(order.BusinessName)
-            ? order.BusinessName
-            : "RENDEZVOUS";
+        var storeName    = !string.IsNullOrEmpty(order.BusinessName) ? order.BusinessName : "RENDEZVOUS";
         var storeAddress = order.BusinessAddress;
-        var storeTel = order.BusinessPhone;
-        var receiptMessage = order.ReceiptMessage;
-        var parts = new List<byte[]>
-        {
-            // Initialize printer
-            Initialize,
-        };
+        var storeTel     = order.BusinessPhone;
+        var receiptMsg   = order.ReceiptMessage;
 
-        // Show REPRINT banner at the top if applicable
+        // Convert UTC → local time for accurate timestamp
+        var localDate = order.OrderDate.Kind == DateTimeKind.Utc
+            ? order.OrderDate.ToLocalTime()
+            : order.OrderDate;
+
+        var parts = new List<byte[]> { Initialize };
+
+        // REPRINT banner
         if (order.IsReprint)
-        {
-            parts.AddRange(new[]
-            {
-                AlignCenter,
-                BoldOn,
-                Line("*** REPRINT ***"),
-                BoldOff,
-            });
-        }
+            parts.AddRange(new[] { AlignCenter, BoldOn, Line("*** REPRINT ***"), BoldOff });
 
+        // Business logo from settings
         if (!string.IsNullOrEmpty(order.BusinessLogo))
-        {
             parts.Add(Base64Image(order.BusinessLogo));
-        }
 
-        parts.AddRange(
-            new[]
-            {
-                // Store header
-                AlignCenter,
-                BoldOn,
-                LargeFontOn,
-                Line(storeName),
-                NormalFont,
-                BoldOff,
-            }
-        );
+        // Store name — normal bold, no large font
+        parts.AddRange(new[]
+        {
+            AlignCenter,
+            BoldOn,
+            Line(storeName),
+            BoldOff,
+        });
 
         if (!string.IsNullOrEmpty(storeAddress))
             parts.Add(Line(storeAddress));
@@ -55,17 +42,24 @@ public static class CustomerReceipt
         if (!string.IsNullOrEmpty(storeTel))
             parts.Add(Line($"Tel: {storeTel}"));
 
-        parts.AddRange(
-            new[]
-            {
-                NewLine,
-                AlignLeft,
-                Divider(),
-                // Order info
-                Line($"Order #: {order.OrderNumber}"),
-                Line($"Date   : {order.OrderDate:MM/dd/yyyy h:mm tt}"),
-            }
-        );
+        parts.AddRange(new[]
+        {
+            NewLine,
+            AlignLeft,
+            Divider(),
+            Line($"Order #: {order.OrderNumber}"),
+            Line($"Date   : {localDate:MM/dd/yyyy h:mm tt}"),
+        });
+
+        // Order type
+        var orderType = order.OrderType?.ToLower() switch
+        {
+            "dine-in"  => "Dine-in",
+            "takeout"  => "Take Away",
+            "takeaway" => "Take Away",
+            _          => "Dine-in",
+        };
+        parts.Add(Line($"Type   : {orderType}"));
 
         if (!string.IsNullOrEmpty(order.TableNumber))
             parts.Add(Line($"Table  : {order.TableNumber}"));
@@ -73,12 +67,13 @@ public static class CustomerReceipt
         if (!string.IsNullOrEmpty(order.Cashier))
             parts.Add(Line($"Cashier: {order.Cashier}"));
 
+        // Only print customer name if present
         if (!string.IsNullOrEmpty(order.CustomerName))
             parts.Add(Line($"Name   : {order.CustomerName}"));
 
         parts.Add(Divider());
 
-        // Order items
+        // Items
         foreach (var item in order.Items)
         {
             var effectivePrice = item.HasDiscount ? item.Price * 0.8m : item.Price;
@@ -87,21 +82,18 @@ public static class CustomerReceipt
                 parts.Add(Line("  [20% Senior/PWD Discount]"));
         }
 
-        parts.AddRange(
-            new[]
-            {
-                Divider(),
-                // Totals
-                TotalLine("Subtotal", order.Subtotal),
-                TotalLine("Discount", order.DiscountTotal),
-                BoldOn,
-                TotalLine("TOTAL", order.Total),
-                BoldOff,
-                Divider(),
-            }
-        );
+        parts.AddRange(new[]
+        {
+            Divider(),
+            TotalLine("Subtotal", order.Subtotal),
+            TotalLine("Discount", order.DiscountTotal),
+            BoldOn,
+            TotalLine("TOTAL", order.Total),
+            BoldOff,
+            Divider(),
+        });
 
-        // ── Payment Method section ──────────────────────────────────
+        // Payment method
         var method = order.PaymentMethod?.ToLower() ?? "cash";
 
         if (method == "split" && order.SplitPayment != null)
@@ -113,7 +105,6 @@ public static class CustomerReceipt
             parts.Add(BoldOn);
             parts.Add(TotalLine("Total:", order.Total));
             parts.Add(BoldOff);
-            // Change = any cash overpayment (usually 0 for split)
             var splitChange = order.AmountPaid > order.Total ? order.AmountPaid - order.Total : 0m;
             parts.Add(TotalLine("Change:", splitChange));
         }
@@ -128,7 +119,6 @@ public static class CustomerReceipt
         }
         else
         {
-            // Cash
             parts.Add(Line("Payment Method:"));
             parts.Add(TotalLine("  Cash:", order.AmountPaid));
             parts.Add(Divider());
@@ -140,23 +130,18 @@ public static class CustomerReceipt
 
         parts.Add(Divider());
 
-        parts.AddRange(
-            new[]
-            {
-                Divider(),
-                // Footer
-                AlignCenter,
-                NewLine,
-                !string.IsNullOrEmpty(receiptMessage)
-                    ? Line(receiptMessage)
-                    : Line("Thank you for dining with us!"),
-                Line("Please come again :)"),
-                NewLine,
-                // Feed and cut
-                FeedLines3,
-                CutPaper,
-            }
-        );
+        parts.AddRange(new[]
+        {
+            AlignCenter,
+            NewLine,
+            !string.IsNullOrEmpty(receiptMsg)
+                ? Line(receiptMsg)
+                : Line("Thank you for dining with us!"),
+            Line("Please come again :)"),
+            NewLine,
+            FeedLines3,
+            CutPaper,
+        });
 
         return Combine(parts.ToArray());
     }
