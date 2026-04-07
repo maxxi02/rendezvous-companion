@@ -93,6 +93,9 @@ public class Order
     [JsonPropertyName("receiptMessage")]
     public string ReceiptMessage { get; set; } = string.Empty;
 
+    [JsonPropertyName("disclaimer")]
+    public string Disclaimer { get; set; } = string.Empty;
+
     // Reprint flag (sent from POS when reprinting an existing receipt)
     [JsonPropertyName("isReprint")]
     public bool IsReprint { get; set; } = false;

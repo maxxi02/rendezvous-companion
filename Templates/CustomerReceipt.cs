@@ -130,18 +130,25 @@ public static class CustomerReceipt
 
         parts.Add(Divider());
 
-        parts.AddRange(new[]
+        parts.Add(AlignCenter);
+        parts.Add(NewLine);
+        
+        if (!string.IsNullOrEmpty(receiptMsg))
+            parts.Add(Line(receiptMsg));
+        else
         {
-            AlignCenter,
-            NewLine,
-            !string.IsNullOrEmpty(receiptMsg)
-                ? Line(receiptMsg)
-                : Line("Thank you for dining with us!"),
-            Line("Please come again :)"),
-            NewLine,
-            FeedLines3,
-            CutPaper,
-        });
+            parts.Add(Line("Thank you for dining with us!"));
+            parts.Add(Line("Please come again :)"));
+        }
+
+        if (!string.IsNullOrEmpty(order.Disclaimer))
+        {
+            parts.Add(Line(order.Disclaimer));
+        }
+
+        parts.Add(NewLine);
+        parts.Add(FeedLines3);
+        parts.Add(CutPaper);
 
         return Combine(parts.ToArray());
     }
