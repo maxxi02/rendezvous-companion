@@ -19,10 +19,23 @@
           <Label Text="Tap Retry to resend a failed job" FontSize="12"
                  TextColor="{StaticResource Gray500}" />
         </VerticalStackLayout>
-        <Button Grid.Column="1" Text="Retry All" Clicked="OnRetryAllClicked"
-                BackgroundColor="{StaticResource Primary}" TextColor="White"
-                CornerRadius="8" FontSize="12" Padding="12,6"
-                IsEnabled="{Binding HasFailed}" />
+        <!-- Retry All with loading state -->
+        <Grid Grid.Column="1">
+          <Button Text="Retry All" Clicked="OnRetryAllClicked"
+                  BackgroundColor="{StaticResource Primary}" TextColor="White"
+                  CornerRadius="8" FontSize="12" Padding="12,6"
+                  IsEnabled="{Binding HasFailed}"
+                  IsVisible="{Binding IsRetryingAll, Converter={StaticResource InverseBoolConverter}}" />
+          <Border StrokeShape="RoundRectangle 8" StrokeThickness="0"
+                  BackgroundColor="{StaticResource Gray400}" Padding="12,6"
+                  IsVisible="{Binding IsRetryingAll}">
+            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+              <ActivityIndicator IsRunning="{Binding IsRetryingAll}" Color="White"
+                                 WidthRequest="14" HeightRequest="14" />
+              <Label Text="Retrying..." FontSize="12" TextColor="White" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+          </Border>
+        </Grid>
       </Grid>
     </Border>
 
@@ -35,11 +48,9 @@
                   BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}">
             <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
 
-              <!-- Status dot -->
               <BoxView Grid.Column="0" WidthRequest="12" HeightRequest="12" CornerRadius="6"
                        VerticalOptions="Center" Color="{Binding StatusColor}" />
 
-              <!-- Info -->
               <VerticalStackLayout Grid.Column="1" Spacing="2">
                 <Label Text="{Binding OrderNumber}" FontAttributes="Bold" FontSize="15" />
                 <Label Text="{Binding CustomerName}" FontSize="13"
@@ -60,21 +71,31 @@
                        FontSize="11" TextColor="{StaticResource Gray500}" />
               </VerticalStackLayout>
 
-              <!-- Actions -->
+              <!-- Per-item actions with loading state -->
               <VerticalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center">
-                <Button Text="Retry"
-                        CommandParameter="{Binding .}"
-                        Clicked="OnRetryClicked"
-                        BackgroundColor="{StaticResource Primary}"
-                        TextColor="White" CornerRadius="6"
-                        FontSize="12" Padding="10,4"
-                        IsVisible="{Binding Status, Converter={StaticResource IsFailedConverter}}" />
+                <Grid IsVisible="{Binding Status, Converter={StaticResource IsFailedConverter}}">
+                  <Button Text="Retry"
+                          CommandParameter="{Binding .}"
+                          Clicked="OnRetryClicked"
+                          BackgroundColor="{StaticResource Primary}"
+                          TextColor="White" CornerRadius="6"
+                          FontSize="12" Padding="10,4"
+                          IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IsRetryingAll, Converter={StaticResource InverseBoolConverter}}" />
+                  <Border StrokeShape="RoundRectangle 6" StrokeThickness="0"
+                          BackgroundColor="{StaticResource Gray400}" Padding="10,4"
+                          IsVisible="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IsRetryingAll}">
+                    <ActivityIndicator IsRunning="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IsRetryingAll}"
+                                       Color="White" WidthRequest="14" HeightRequest="14"
+                                       HorizontalOptions="Center" />
+                  </Border>
+                </Grid>
                 <Button Text="✕"
                         CommandParameter="{Binding .}"
                         Clicked="OnDismissClicked"
                         BackgroundColor="{StaticResource Gray500}"
                         TextColor="White" CornerRadius="6"
-                        FontSize="12" Padding="10,4" />
+                        FontSize="12" Padding="10,4"
+                        IsEnabled="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.IsRetryingAll, Converter={StaticResource InverseBoolConverter}}" />
               </VerticalStackLayout>
 
             </Grid>

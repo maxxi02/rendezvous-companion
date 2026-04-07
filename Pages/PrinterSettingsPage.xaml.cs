@@ -9,10 +9,41 @@ public partial class PrinterSettingsPage : ContentPage
     private List<PrinterDevice> _btDevices = new();
     private List<PrinterDevice> _usbDevices = new();
 
+    // ─── Loading States ───────────────────────────────────────────
+
+    private bool _isScanningBt;
+    public bool IsScanningBt
+    {
+        get => _isScanningBt;
+        set { _isScanningBt = value; OnPropertyChanged(); }
+    }
+
+    private bool _isScanningUsb;
+    public bool IsScanningUsb
+    {
+        get => _isScanningUsb;
+        set { _isScanningUsb = value; OnPropertyChanged(); }
+    }
+
+    private bool _isTestingReceipt;
+    public bool IsTestingReceipt
+    {
+        get => _isTestingReceipt;
+        set { _isTestingReceipt = value; OnPropertyChanged(); }
+    }
+
+    private bool _isTestingKitchen;
+    public bool IsTestingKitchen
+    {
+        get => _isTestingKitchen;
+        set { _isTestingKitchen = value; OnPropertyChanged(); }
+    }
+
     public PrinterSettingsPage(PrintManager printManager)
     {
         InitializeComponent();
         _printManager = printManager;
+        BindingContext = this;
         UpdateRoleSummary();
     }
 
@@ -30,8 +61,7 @@ public partial class PrinterSettingsPage : ContentPage
 
     private async Task ScanBluetoothAsync()
     {
-        BtScanIndicator.IsVisible = true;
-        BtScanIndicator.IsRunning = true;
+        IsScanningBt = true;
         BtScanStatusLabel.Text = "Scanning for Bluetooth devices...";
         BluetoothDevicesList.ItemsSource = null;
 
@@ -51,8 +81,7 @@ public partial class PrinterSettingsPage : ContentPage
         }
         finally
         {
-            BtScanIndicator.IsVisible = false;
-            BtScanIndicator.IsRunning = false;
+            IsScanningBt = false;
         }
     }
 
@@ -63,8 +92,7 @@ public partial class PrinterSettingsPage : ContentPage
 
     private async Task ScanUsbAsync()
     {
-        UsbScanIndicator.IsVisible = true;
-        UsbScanIndicator.IsRunning = true;
+        IsScanningUsb = true;
         UsbScanStatusLabel.Text = "Scanning for USB devices...";
         UsbDevicesList.ItemsSource = null;
 
@@ -84,8 +112,7 @@ public partial class PrinterSettingsPage : ContentPage
         }
         finally
         {
-            UsbScanIndicator.IsVisible = false;
-            UsbScanIndicator.IsRunning = false;
+            IsScanningUsb = false;
         }
     }
 
@@ -97,8 +124,6 @@ public partial class PrinterSettingsPage : ContentPage
         if (device == null) return;
 
         BtScanStatusLabel.Text = $"Pairing with {device.Name}…";
-        BtScanIndicator.IsVisible = true;
-        BtScanIndicator.IsRunning = true;
 
         try
         {
@@ -127,8 +152,7 @@ public partial class PrinterSettingsPage : ContentPage
         }
         finally
         {
-            BtScanIndicator.IsVisible = false;
-            BtScanIndicator.IsRunning = false;
+            IsScanningBt = false;
         }
     }
 
@@ -140,8 +164,6 @@ public partial class PrinterSettingsPage : ContentPage
         if (device == null) return;
 
         UsbScanStatusLabel.Text = $"Requesting USB permission for {device.Name}…";
-        UsbScanIndicator.IsVisible = true;
-        UsbScanIndicator.IsRunning = true;
 
         try
         {
@@ -170,8 +192,7 @@ public partial class PrinterSettingsPage : ContentPage
         }
         finally
         {
-            UsbScanIndicator.IsVisible = false;
-            UsbScanIndicator.IsRunning = false;
+            IsScanningUsb = false;
         }
     }
 
@@ -237,22 +258,26 @@ public partial class PrinterSettingsPage : ContentPage
 
     private async void OnTestReceiptClicked(object? sender, EventArgs e)
     {
-        var ok = await _printManager.PrintReceiptAsync(CreateTestOrder());
-        await DisplayAlertAsync(
-            ok ? "Success" : "Failed",
-            ok ? "Test receipt printed!" : "Print failed. Check receipt printer connection.",
-            "OK"
-        );
+        IsTestingReceipt = true;
+        try
+        {
+            var ok = await _printManager.PrintReceiptAsync(CreateTestOrder());
+            await DisplayAlertAsync(ok ? "Success" : "Failed",
+                ok ? "Test receipt printed!" : "Print failed. Check receipt printer connection.", "OK");
+        }
+        finally { IsTestingReceipt = false; }
     }
 
     private async void OnTestKitchenClicked(object? sender, EventArgs e)
     {
-        var ok = await _printManager.PrintKitchenSlipAsync(CreateTestOrder());
-        await DisplayAlertAsync(
-            ok ? "Success" : "Failed",
-            ok ? "Test kitchen slip printed!" : "Print failed. Check kitchen printer connection.",
-            "OK"
-        );
+        IsTestingKitchen = true;
+        try
+        {
+            var ok = await _printManager.PrintKitchenSlipAsync(CreateTestOrder());
+            await DisplayAlertAsync(ok ? "Success" : "Failed",
+                ok ? "Test kitchen slip printed!" : "Print failed. Check kitchen printer connection.", "OK");
+        }
+        finally { IsTestingKitchen = false; }
     }
 
     // ─── Helpers ──────────────────────────────────────────────────

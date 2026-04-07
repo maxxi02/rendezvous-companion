@@ -14,7 +14,14 @@ public partial class PrintQueuePage : ContentPage
     public string SummaryText =>
         $"{_queue.FailedCount} failed · {_queue.PendingCount} pending · {_queue.Items.Count(i => i.Status == PrintJobStatus.Printed)} printed";
 
-    public bool HasFailed => _queue.FailedCount > 0;
+    public bool HasFailed => _queue.FailedCount > 0 && !IsRetryingAll;
+
+    private bool _isRetryingAll;
+    public bool IsRetryingAll
+    {
+        get => _isRetryingAll;
+        set { _isRetryingAll = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasFailed)); }
+    }
 
     public PrintQueuePage(PrintQueueService queue, PrintManager printManager)
     {
@@ -45,7 +52,6 @@ public partial class PrintQueuePage : ContentPage
             btn.IsEnabled = false;
             var ok = await _printManager.RetryQueueItemAsync(item);
             btn.IsEnabled = true;
-
             if (!ok)
                 await DisplayAlertAsync("Retry Failed", "Could not print. Check printer connection.", "OK");
         }
@@ -56,15 +62,22 @@ public partial class PrintQueuePage : ContentPage
         var failed = _queue.Items.Where(i => i.Status == PrintJobStatus.Failed).ToList();
         if (failed.Count == 0) return;
 
-        int success = 0;
-        foreach (var item in failed)
+        IsRetryingAll = true;
+        try
         {
-            if (await _printManager.RetryQueueItemAsync(item))
-                success++;
+            int success = 0;
+            foreach (var item in failed)
+            {
+                if (await _printManager.RetryQueueItemAsync(item))
+                    success++;
+            }
+            await DisplayAlertAsync("Retry Complete",
+                $"{success}/{failed.Count} jobs printed successfully.", "OK");
         }
-
-        await DisplayAlertAsync("Retry Complete",
-            $"{success}/{failed.Count} jobs printed successfully.", "OK");
+        finally
+        {
+            IsRetryingAll = false;
+        }
     }
 
     private void OnDismissClicked(object? sender, EventArgs e)

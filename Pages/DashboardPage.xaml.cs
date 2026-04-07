@@ -13,29 +13,38 @@ public partial class DashboardPage : ContentPage
 
     public Color SocketStatusColor => _socket.IsConnected
         ? Color.FromArgb("#28a745") : Color.FromArgb("#DC3545");
-
     public string SocketStatusText => _socket.IsConnected
         ? "Connected to server" : "Disconnected — tap Reconnect";
-
     public bool IsDisconnected => !_socket.IsConnected;
 
     public Color ReceiptPrinterColor => _printManager.IsReceiptPrinterConnected
         ? Color.FromArgb("#28a745") : Color.FromArgb("#DC3545");
-
     public Color KitchenPrinterColor => _printManager.IsKitchenPrinterConnected
         ? Color.FromArgb("#28a745") : Color.FromArgb("#DC3545");
-
     public string ReceiptPrinterName => _printManager.ReceiptPrinterDevice?.Name ?? "Not connected";
     public string KitchenPrinterName => _printManager.KitchenPrinterDevice?.Name ?? "Not connected";
-
-    public string LastReceiptPrintTime { get; private set; } = "—";
-    public string LastKitchenPrintTime { get; private set; } = "—";
 
     public int PendingCount => _queue.PendingCount;
     public int FailedCount => _queue.FailedCount;
     public int ActiveOrderCount => _socket.Orders.Count;
 
     public bool IsDarkMode => Application.Current?.UserAppTheme == AppTheme.Dark;
+
+    // ─── Loading States ───────────────────────────────────────────────────────
+
+    private bool _isReconnecting;
+    public bool IsReconnecting
+    {
+        get => _isReconnecting;
+        set { _isReconnecting = value; OnPropertyChanged(); }
+    }
+
+    private bool _isXReportLoading;
+    public bool IsXReportLoading
+    {
+        get => _isXReportLoading;
+        set { _isXReportLoading = value; OnPropertyChanged(); }
+    }
 
     public DashboardPage(SocketService socket, PrintManager printManager, PrintQueueService queue)
     {
@@ -76,6 +85,7 @@ public partial class DashboardPage : ContentPage
 
     private async void OnReconnectClicked(object? sender, EventArgs e)
     {
+        IsReconnecting = true;
         try
         {
             await _socket.ConnectAsync();
@@ -83,6 +93,10 @@ public partial class DashboardPage : ContentPage
         catch (Exception ex)
         {
             await DisplayAlertAsync("Connection Failed", ex.Message, "OK");
+        }
+        finally
+        {
+            IsReconnecting = false;
         }
     }
 
@@ -98,18 +112,26 @@ public partial class DashboardPage : ContentPage
             "Print a mid-session X-Reading report now?", "Print", "Cancel");
         if (!confirm) return;
 
-        var report = new ZReport
+        IsXReportLoading = true;
+        try
         {
-            BusinessName = "Rendezvous Cafe",
-            Today = DateTime.Now.ToString("MMMM dd, yyyy"),
-            TimeNow = DateTime.Now.ToString("hh:mm tt"),
-            IsXReading = true,
-            Transactions = _socket.Orders.Count,
-        };
+            var report = new ZReport
+            {
+                BusinessName = "Rendezvous Cafe",
+                Today = DateTime.Now.ToString("MMMM dd, yyyy"),
+                TimeNow = DateTime.Now.ToString("hh:mm tt"),
+                IsXReading = true,
+                Transactions = _socket.Orders.Count,
+            };
 
-        var ok = await _printManager.PrintZReportAsync(report);
-        await DisplayAlertAsync(ok ? "Printed" : "Failed",
-            ok ? "X-Report sent to printer." : "Could not print. Check printer connection.", "OK");
+            var ok = await _printManager.PrintZReportAsync(report);
+            await DisplayAlertAsync(ok ? "Printed" : "Failed",
+                ok ? "X-Report sent to printer." : "Could not print. Check printer connection.", "OK");
+        }
+        finally
+        {
+            IsXReportLoading = false;
+        }
     }
 
     private void OnThemeToggled(object? sender, ToggledEventArgs e)

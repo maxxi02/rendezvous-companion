@@ -4,150 +4,79 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
   x:Class="rendezvous_companion.Pages.PrinterSettingsPage"
   Title="Printer Settings"
-  BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#121212}"
->
+  BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#121212}">
+
   <ScrollView>
     <VerticalStackLayout Padding="24" Spacing="24">
+
       <!-- Bluetooth Scan -->
-      <Border
-        StrokeShape="RoundRectangle 12"
-        StrokeThickness="0"
-        BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
-        Padding="20"
-      >
+      <Border StrokeShape="RoundRectangle 12" StrokeThickness="0"
+              BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}" Padding="20">
         <VerticalStackLayout Spacing="16">
           <Grid ColumnDefinitions="*, Auto">
             <VerticalStackLayout>
-              <Label
-                Text="Bluetooth Printers"
-                FontSize="20"
-                FontAttributes="Bold"
-                TextColor="{StaticResource Primary}"
-              />
-              <Label
-                Text="Tap Scan, then use the Pair button to bond a new device."
-                FontSize="14"
-                TextColor="{StaticResource Gray500}"
-              />
+              <Label Text="Bluetooth Printers" FontSize="20" FontAttributes="Bold"
+                     TextColor="{StaticResource Primary}" />
+              <Label Text="Auto-scans on open. Tap Scan to refresh."
+                     FontSize="14" TextColor="{StaticResource Gray500}" />
             </VerticalStackLayout>
-            <Button
-              Grid.Column="1"
-              Text="Scan"
-              Clicked="OnScanBluetoothClicked"
-              BackgroundColor="{StaticResource Primary}"
-              TextColor="#FFFFFF"
-              CornerRadius="8"
-              WidthRequest="80"
-              HeightRequest="40"
-              FontAttributes="Bold"
-            />
+            <!-- Scan BT button with loading -->
+            <Grid Grid.Column="1">
+              <Button Text="Scan" Clicked="OnScanBluetoothClicked"
+                      BackgroundColor="{StaticResource Primary}" TextColor="White"
+                      CornerRadius="8" WidthRequest="80" HeightRequest="40" FontAttributes="Bold"
+                      IsVisible="{Binding IsScanningBt, Converter={StaticResource InverseBoolConverter}}" />
+              <Border StrokeShape="RoundRectangle 8" StrokeThickness="0"
+                      BackgroundColor="{StaticResource Gray400}"
+                      WidthRequest="80" HeightRequest="40"
+                      IsVisible="{Binding IsScanningBt}">
+                <ActivityIndicator IsRunning="{Binding IsScanningBt}" Color="White"
+                                   WidthRequest="20" HeightRequest="20"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
+              </Border>
+            </Grid>
           </Grid>
 
-          <ActivityIndicator
-            x:Name="BtScanIndicator"
-            IsVisible="False"
-            IsRunning="False"
-            Color="{StaticResource Primary}"
-            HeightRequest="30"
-          />
-          <Label
-            x:Name="BtScanStatusLabel"
-            Text=""
-            TextColor="{StaticResource Gray500}"
-            FontSize="13"
-            HorizontalTextAlignment="Center"
-          />
+          <Label x:Name="BtScanStatusLabel" Text="" TextColor="{StaticResource Gray500}"
+                 FontSize="13" HorizontalTextAlignment="Center" />
 
           <CollectionView x:Name="BluetoothDevicesList" SelectionMode="None">
             <CollectionView.ItemTemplate>
               <DataTemplate>
-                <Border
-                  StrokeShape="RoundRectangle 8"
-                  StrokeThickness="1"
-                  Stroke="{AppThemeBinding Light=#C8C8C8, Dark=#404040}"
-                  Padding="12"
-                  Margin="0,6"
-                  BackgroundColor="{AppThemeBinding Light=#E1E1E1, Dark=#2C2C2C}"
-                >
+                <Border StrokeShape="RoundRectangle 8" StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light=#C8C8C8, Dark=#404040}"
+                        Padding="12" Margin="0,6"
+                        BackgroundColor="{AppThemeBinding Light=#E1E1E1, Dark=#2C2C2C}">
                   <Grid ColumnDefinitions="*, Auto">
                     <VerticalStackLayout Grid.Column="0" Spacing="2">
-                      <Label
-                        Text="{Binding Name}"
-                        FontAttributes="Bold"
-                        FontSize="16"
-                        TextColor="{StaticResource Gray900}"
-                      />
-                      <Label
-                        Text="{Binding Id}"
-                        FontSize="12"
-                        TextColor="#404040"
-                        FontFamily="Monospace"
-                      />
+                      <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16"
+                             TextColor="{StaticResource Gray900}" />
+                      <Label Text="{Binding Id}" FontSize="12" TextColor="#404040" />
                       <HorizontalStackLayout Spacing="6" Margin="0,4,0,0">
-                        <Border
-                          StrokeShape="RoundRectangle 4"
-                          BackgroundColor="{StaticResource Primary}"
-                          Padding="6,2"
-                        >
-                          <Label
-                            Text="BLUETOOTH"
-                            FontSize="10"
-                            FontAttributes="Bold"
-                            TextColor="White"
-                          />
+                        <Border StrokeShape="RoundRectangle 4" BackgroundColor="{StaticResource Primary}" Padding="6,2">
+                          <Label Text="BLUETOOTH" FontSize="10" FontAttributes="Bold" TextColor="White" />
                         </Border>
-                        <!-- Paired badge — visible only when IsPaired=true -->
-                        <Border
-                          StrokeShape="RoundRectangle 4"
-                          BackgroundColor="#28a745"
-                          Padding="6,2"
-                          IsVisible="{Binding IsPaired}"
-                        >
+                        <Border StrokeShape="RoundRectangle 4" BackgroundColor="#28a745" Padding="6,2"
+                                IsVisible="{Binding IsPaired}">
                           <Label Text="PAIRED" FontSize="10" FontAttributes="Bold" TextColor="White" />
                         </Border>
                       </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
-                      <!-- Pair button — only when not yet paired -->
-                      <Button
-                        Text="Pair"
-                        CommandParameter="{Binding .}"
-                        Clicked="OnPairBluetoothClicked"
-                        BackgroundColor="{StaticResource Primary}"
-                        TextColor="White"
-                        CornerRadius="6"
-                        FontSize="12"
-                        FontAttributes="Bold"
-                        Padding="12,6"
-                        IsVisible="{Binding IsPaired, Converter={StaticResource InverseBoolConverter}}"
-                      />
-                      <!-- Receipt / Kitchen — enabled only when paired -->
-                      <Button
-                        Text="Receipt"
-                        CommandParameter="{Binding .}"
-                        Clicked="OnAssignReceiptClicked"
-                        BackgroundColor="#28a745"
-                        TextColor="White"
-                        CornerRadius="6"
-                        FontSize="12"
-                        FontAttributes="Bold"
-                        Padding="12,6"
-                        IsEnabled="{Binding IsPaired}"
-                        Opacity="{Binding IsPaired, Converter={StaticResource BoolToOpacityConverter}}"
-                      />
-                      <Button
-                        Text="Kitchen"
-                        CommandParameter="{Binding .}"
-                        Clicked="OnAssignKitchenClicked"
-                        BackgroundColor="#fd7e14"
-                        TextColor="White"
-                        CornerRadius="6"
-                        FontSize="12"
-                        FontAttributes="Bold"
-                        Padding="12,6"
-                        IsEnabled="{Binding IsPaired}"
-                        Opacity="{Binding IsPaired, Converter={StaticResource BoolToOpacityConverter}}"
-                      />
+                      <Button Text="Pair" CommandParameter="{Binding .}" Clicked="OnPairBluetoothClicked"
+                              BackgroundColor="{StaticResource Primary}" TextColor="White"
+                              CornerRadius="6" FontSize="12" FontAttributes="Bold" Padding="12,6"
+                              IsVisible="{Binding IsPaired, Converter={StaticResource InverseBoolConverter}}" />
+                      <Button Text="Receipt" CommandParameter="{Binding .}" Clicked="OnAssignReceiptClicked"
+                              BackgroundColor="#28a745" TextColor="White"
+                              CornerRadius="6" FontSize="12" FontAttributes="Bold" Padding="12,6"
+                              IsEnabled="{Binding IsPaired}"
+                              Opacity="{Binding IsPaired, Converter={StaticResource BoolToOpacityConverter}}" />
+                      <Button Text="Kitchen" CommandParameter="{Binding .}" Clicked="OnAssignKitchenClicked"
+                              BackgroundColor="#fd7e14" TextColor="White"
+                              CornerRadius="6" FontSize="12" FontAttributes="Bold" Padding="12,6"
+                              IsEnabled="{Binding IsPaired}"
+                              Opacity="{Binding IsPaired, Converter={StaticResource BoolToOpacityConverter}}" />
                     </HorizontalStackLayout>
                   </Grid>
                 </Border>
@@ -158,135 +87,72 @@
       </Border>
 
       <!-- USB Scan -->
-      <Border
-        StrokeShape="RoundRectangle 12"
-        StrokeThickness="0"
-        BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
-        Padding="20"
-      >
+      <Border StrokeShape="RoundRectangle 12" StrokeThickness="0"
+              BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}" Padding="20">
         <VerticalStackLayout Spacing="16">
           <Grid ColumnDefinitions="*, Auto">
             <VerticalStackLayout>
               <Label Text="USB Printers" FontSize="20" FontAttributes="Bold" TextColor="#198754" />
-              <Label
-                Text="Tap Scan, then use the Pair button to grant USB permission."
-                FontSize="14"
-                TextColor="{StaticResource Gray500}"
-              />
+              <Label Text="Auto-scans on open. Tap Scan to refresh."
+                     FontSize="14" TextColor="{StaticResource Gray500}" />
             </VerticalStackLayout>
-            <Button
-              Grid.Column="1"
-              Text="Scan"
-              Clicked="OnScanUsbClicked"
-              BackgroundColor="#198754"
-              TextColor="White"
-              CornerRadius="8"
-              WidthRequest="80"
-              HeightRequest="40"
-              FontAttributes="Bold"
-            />
+            <!-- Scan USB button with loading -->
+            <Grid Grid.Column="1">
+              <Button Text="Scan" Clicked="OnScanUsbClicked"
+                      BackgroundColor="#198754" TextColor="White"
+                      CornerRadius="8" WidthRequest="80" HeightRequest="40" FontAttributes="Bold"
+                      IsVisible="{Binding IsScanningUsb, Converter={StaticResource InverseBoolConverter}}" />
+              <Border StrokeShape="RoundRectangle 8" StrokeThickness="0"
+                      BackgroundColor="{StaticResource Gray400}"
+                      WidthRequest="80" HeightRequest="40"
+                      IsVisible="{Binding IsScanningUsb}">
+                <ActivityIndicator IsRunning="{Binding IsScanningUsb}" Color="White"
+                                   WidthRequest="20" HeightRequest="20"
+                                   HorizontalOptions="Center" VerticalOptions="Center" />
+              </Border>
+            </Grid>
           </Grid>
 
-          <ActivityIndicator
-            x:Name="UsbScanIndicator"
-            IsVisible="False"
-            IsRunning="False"
-            Color="#198754"
-            HeightRequest="30"
-          />
-          <Label
-            x:Name="UsbScanStatusLabel"
-            Text=""
-            TextColor="{StaticResource Gray500}"
-            FontSize="13"
-            HorizontalTextAlignment="Center"
-          />
+          <Label x:Name="UsbScanStatusLabel" Text="" TextColor="{StaticResource Gray500}"
+                 FontSize="13" HorizontalTextAlignment="Center" />
 
           <CollectionView x:Name="UsbDevicesList" SelectionMode="None">
             <CollectionView.ItemTemplate>
               <DataTemplate>
-                <Border
-                  StrokeShape="RoundRectangle 8"
-                  StrokeThickness="1"
-                  Stroke="{AppThemeBinding Light=#C8C8C8, Dark=#404040}"
-                  Padding="12"
-                  Margin="0,6"
-                  BackgroundColor="{AppThemeBinding Light=#E1E1E1, Dark=#2C2C2C}"
-                >
+                <Border StrokeShape="RoundRectangle 8" StrokeThickness="1"
+                        Stroke="{AppThemeBinding Light=#C8C8C8, Dark=#404040}"
+                        Padding="12" Margin="0,6"
+                        BackgroundColor="{AppThemeBinding Light=#E1E1E1, Dark=#2C2C2C}">
                   <Grid ColumnDefinitions="*, Auto">
                     <VerticalStackLayout Grid.Column="0" Spacing="2">
-                      <Label
-                        Text="{Binding Name}"
-                        FontAttributes="Bold"
-                        FontSize="16"
-                        TextColor="{StaticResource Gray900}"
-                      />
-                      <Label
-                        Text="{Binding Id}"
-                        FontSize="12"
-                        TextColor="#404040"
-                        FontFamily="Monospace"
-                      />
+                      <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16"
+                             TextColor="{StaticResource Gray900}" />
+                      <Label Text="{Binding Id}" FontSize="12" TextColor="#404040" />
                       <HorizontalStackLayout Spacing="6" Margin="0,4,0,0">
-                        <Border
-                          StrokeShape="RoundRectangle 4"
-                          BackgroundColor="#198754"
-                          Padding="6,2"
-                        >
+                        <Border StrokeShape="RoundRectangle 4" BackgroundColor="#198754" Padding="6,2">
                           <Label Text="USB" FontSize="10" FontAttributes="Bold" TextColor="White" />
                         </Border>
-                        <!-- Permission badge — visible only when IsPaired=true -->
-                        <Border
-                          StrokeShape="RoundRectangle 4"
-                          BackgroundColor="#28a745"
-                          Padding="6,2"
-                          IsVisible="{Binding IsPaired}"
-                        >
+                        <Border StrokeShape="RoundRectangle 4" BackgroundColor="#28a745" Padding="6,2"
+                                IsVisible="{Binding IsPaired}">
                           <Label Text="PERMITTED" FontSize="10" FontAttributes="Bold" TextColor="White" />
                         </Border>
                       </HorizontalStackLayout>
                     </VerticalStackLayout>
                     <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
-                      <!-- Pair button — only when no permission yet -->
-                      <Button
-                        Text="Pair"
-                        CommandParameter="{Binding .}"
-                        Clicked="OnPairUsbClicked"
-                        BackgroundColor="#198754"
-                        TextColor="White"
-                        CornerRadius="6"
-                        FontSize="12"
-                        FontAttributes="Bold"
-                        Padding="12,6"
-                        IsVisible="{Binding IsPaired, Converter={StaticResource InverseBoolConverter}}"
-                      />
-                      <!-- Receipt / Kitchen — enabled only when permitted -->
-                      <Button
-                        Text="Receipt"
-                        CommandParameter="{Binding .}"
-                        Clicked="OnAssignReceiptClicked"
-                        BackgroundColor="#28a745"
-                        TextColor="White"
-                        CornerRadius="6"
-                        FontSize="12"
-                        FontAttributes="Bold"
-                        Padding="12,6"
-                        IsEnabled="{Binding IsPaired}"
-                        Opacity="{Binding IsPaired, Converter={StaticResource BoolToOpacityConverter}}"
-                      />
-                      <Button
-                        Text="Kitchen"
-                        CommandParameter="{Binding .}"
-                        Clicked="OnAssignKitchenClicked"
-                        BackgroundColor="#fd7e14"
-                        TextColor="White"
-                        CornerRadius="6"
-                        FontSize="12"
-                        FontAttributes="Bold"
-                        Padding="12,6"
-                        IsEnabled="{Binding IsPaired}"
-                        Opacity="{Binding IsPaired, Converter={StaticResource BoolToOpacityConverter}}"
-                      />
+                      <Button Text="Pair" CommandParameter="{Binding .}" Clicked="OnPairUsbClicked"
+                              BackgroundColor="#198754" TextColor="White"
+                              CornerRadius="6" FontSize="12" FontAttributes="Bold" Padding="12,6"
+                              IsVisible="{Binding IsPaired, Converter={StaticResource InverseBoolConverter}}" />
+                      <Button Text="Receipt" CommandParameter="{Binding .}" Clicked="OnAssignReceiptClicked"
+                              BackgroundColor="#28a745" TextColor="White"
+                              CornerRadius="6" FontSize="12" FontAttributes="Bold" Padding="12,6"
+                              IsEnabled="{Binding IsPaired}"
+                              Opacity="{Binding IsPaired, Converter={StaticResource BoolToOpacityConverter}}" />
+                      <Button Text="Kitchen" CommandParameter="{Binding .}" Clicked="OnAssignKitchenClicked"
+                              BackgroundColor="#fd7e14" TextColor="White"
+                              CornerRadius="6" FontSize="12" FontAttributes="Bold" Padding="12,6"
+                              IsEnabled="{Binding IsPaired}"
+                              Opacity="{Binding IsPaired, Converter={StaticResource BoolToOpacityConverter}}" />
                     </HorizontalStackLayout>
                   </Grid>
                 </Border>
@@ -296,135 +162,91 @@
         </VerticalStackLayout>
       </Border>
 
-      <!-- Role Summary -->
-      <Border
-        StrokeShape="RoundRectangle 12"
-        StrokeThickness="2"
-        Stroke="{StaticResource Primary}"
-        BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}"
-        Padding="20"
-      >
+      <!-- Current Assignments -->
+      <Border StrokeShape="RoundRectangle 12" StrokeThickness="2"
+              Stroke="{StaticResource Primary}"
+              BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}" Padding="20">
         <VerticalStackLayout Spacing="16">
-          <Label
-            Text="Current Assignments"
-            FontSize="20"
-            FontAttributes="Bold"
-            TextColor="{StaticResource Primary}"
-          />
-
+          <Label Text="Current Assignments" FontSize="20" FontAttributes="Bold"
+                 TextColor="{StaticResource Primary}" />
           <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
-            <!-- Receipt Printer -->
-            <Border
-              Grid.Column="0"
-              StrokeShape="RoundRectangle 8"
-              StrokeThickness="1"
-              Stroke="#28a745"
-              Padding="12"
-              BackgroundColor="{AppThemeBinding Light=#F0F9F1, Dark=#0F2D15}"
-            >
+            <!-- Receipt -->
+            <Border Grid.Column="0" StrokeShape="RoundRectangle 8" StrokeThickness="1"
+                    Stroke="#28a745" Padding="12"
+                    BackgroundColor="{AppThemeBinding Light=#F0F9F1, Dark=#0F2D15}">
               <VerticalStackLayout Spacing="8">
-                <Label
-                  Text="RECEIPT"
-                  FontAttributes="Bold"
-                  TextColor="#28a745"
-                  FontSize="12"
-                  HorizontalTextAlignment="Center"
-                />
-                <Label
-                  x:Name="ReceiptRoleLabel"
-                  Text="Not assigned"
-                  TextColor="Red"
-                  FontSize="13"
-                  HorizontalTextAlignment="Center"
-                  MaxLines="2"
-                  LineBreakMode="TailTruncation"
-                  HeightRequest="40"
-                />
-                <Button
-                  x:Name="TestReceiptButton"
-                  Text="Test Print"
-                  Clicked="OnTestReceiptClicked"
-                  BackgroundColor="#17a2b8"
-                  TextColor="White"
-                  CornerRadius="6"
-                  FontSize="11"
-                  Padding="4"
-                  IsEnabled="False"
-                />
+                <Label Text="RECEIPT" FontAttributes="Bold" TextColor="#28a745"
+                       FontSize="12" HorizontalTextAlignment="Center" />
+                <Label x:Name="ReceiptRoleLabel" Text="Not assigned" TextColor="Red"
+                       FontSize="13" HorizontalTextAlignment="Center"
+                       MaxLines="2" LineBreakMode="TailTruncation" HeightRequest="40" />
+                <!-- Test Print with loading -->
+                <Grid>
+                  <Button x:Name="TestReceiptButton" Text="Test Print"
+                          Clicked="OnTestReceiptClicked"
+                          BackgroundColor="#17a2b8" TextColor="White"
+                          CornerRadius="6" FontSize="11" Padding="4" IsEnabled="False"
+                          IsVisible="{Binding IsTestingReceipt, Converter={StaticResource InverseBoolConverter}}" />
+                  <Border StrokeShape="RoundRectangle 6" StrokeThickness="0"
+                          BackgroundColor="{StaticResource Gray400}" Padding="4"
+                          IsVisible="{Binding IsTestingReceipt}">
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="4">
+                      <ActivityIndicator IsRunning="{Binding IsTestingReceipt}" Color="White"
+                                         WidthRequest="12" HeightRequest="12" />
+                      <Label Text="Printing..." FontSize="10" TextColor="White" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                  </Border>
+                </Grid>
               </VerticalStackLayout>
             </Border>
-
-            <!-- Kitchen Printer -->
-            <Border
-              Grid.Column="1"
-              StrokeShape="RoundRectangle 8"
-              StrokeThickness="1"
-              Stroke="#fd7e14"
-              Padding="12"
-              BackgroundColor="{AppThemeBinding Light=#FFF5EB, Dark=#2D1A0F}"
-            >
+            <!-- Kitchen -->
+            <Border Grid.Column="1" StrokeShape="RoundRectangle 8" StrokeThickness="1"
+                    Stroke="#fd7e14" Padding="12"
+                    BackgroundColor="{AppThemeBinding Light=#FFF5EB, Dark=#2D1A0F}">
               <VerticalStackLayout Spacing="8">
-                <Label
-                  Text="KITCHEN"
-                  FontAttributes="Bold"
-                  TextColor="#fd7e14"
-                  FontSize="12"
-                  HorizontalTextAlignment="Center"
-                />
-                <Label
-                  x:Name="KitchenRoleLabel"
-                  Text="Not assigned"
-                  TextColor="Red"
-                  FontSize="13"
-                  HorizontalTextAlignment="Center"
-                  MaxLines="2"
-                  LineBreakMode="TailTruncation"
-                  HeightRequest="40"
-                />
-                <Button
-                  x:Name="TestKitchenButton"
-                  Text="Test Print"
-                  Clicked="OnTestKitchenClicked"
-                  BackgroundColor="#17a2b8"
-                  TextColor="White"
-                  CornerRadius="6"
-                  FontSize="11"
-                  Padding="4"
-                  IsEnabled="False"
-                />
+                <Label Text="KITCHEN" FontAttributes="Bold" TextColor="#fd7e14"
+                       FontSize="12" HorizontalTextAlignment="Center" />
+                <Label x:Name="KitchenRoleLabel" Text="Not assigned" TextColor="Red"
+                       FontSize="13" HorizontalTextAlignment="Center"
+                       MaxLines="2" LineBreakMode="TailTruncation" HeightRequest="40" />
+                <!-- Test Print with loading -->
+                <Grid>
+                  <Button x:Name="TestKitchenButton" Text="Test Print"
+                          Clicked="OnTestKitchenClicked"
+                          BackgroundColor="#17a2b8" TextColor="White"
+                          CornerRadius="6" FontSize="11" Padding="4" IsEnabled="False"
+                          IsVisible="{Binding IsTestingKitchen, Converter={StaticResource InverseBoolConverter}}" />
+                  <Border StrokeShape="RoundRectangle 6" StrokeThickness="0"
+                          BackgroundColor="{StaticResource Gray400}" Padding="4"
+                          IsVisible="{Binding IsTestingKitchen}">
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="4">
+                      <ActivityIndicator IsRunning="{Binding IsTestingKitchen}" Color="White"
+                                         WidthRequest="12" HeightRequest="12" />
+                      <Label Text="Printing..." FontSize="10" TextColor="White" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                  </Border>
+                </Grid>
               </VerticalStackLayout>
             </Border>
           </Grid>
         </VerticalStackLayout>
       </Border>
 
-      <!-- Danger Zone / Exit -->
-      <Border
-        StrokeShape="RoundRectangle 12"
-        StrokeThickness="0"
-        BackgroundColor="{AppThemeBinding Light=#FFEBEB, Dark=#3D1B1B}"
-        Padding="20"
-        Margin="0, 10, 0, 0"
-      >
+      <!-- Danger Zone -->
+      <Border StrokeShape="RoundRectangle 12" StrokeThickness="0"
+              BackgroundColor="{AppThemeBinding Light=#FFEBEB, Dark=#3D1B1B}"
+              Padding="20" Margin="0,10,0,0">
         <VerticalStackLayout Spacing="12">
           <Label Text="System Control" FontSize="18" FontAttributes="Bold" TextColor="#DC3545" />
-          <Label
-            Text="The companion app normally runs forever in the background to ensure your printers never disconnect. Use this button if you need to completely stop the app and its background service."
-            FontSize="13"
-            TextColor="{AppThemeBinding Light=#8B2121, Dark=#FFB3B3}"
-          />
-          <Button
-            Text="Shutdown App &amp; Service"
-            Clicked="OnExitAppClicked"
-            BackgroundColor="#DC3545"
-            TextColor="White"
-            CornerRadius="8"
-            HeightRequest="48"
-            FontAttributes="Bold"
-            Margin="0,10,0,0"
-          />
+          <Label Text="The companion app normally runs forever in the background to ensure your printers never disconnect. Use this button if you need to completely stop the app and its background service."
+                 FontSize="13" TextColor="{AppThemeBinding Light=#8B2121, Dark=#FFB3B3}" />
+          <Button Text="Shutdown App &amp; Service"
+                  Clicked="OnExitAppClicked"
+                  BackgroundColor="#DC3545" TextColor="White"
+                  CornerRadius="8" HeightRequest="48" FontAttributes="Bold" Margin="0,10,0,0" />
         </VerticalStackLayout>
       </Border>
+
     </VerticalStackLayout>
   </ScrollView>
 </ContentPage>

@@ -25,6 +25,22 @@ public partial class OrdersPage : ContentPage
     public Color ConnectionStatusColor => IsConnected
         ? Color.FromArgb("#28a745") : Color.FromArgb("#DC3545");
 
+    // ─── Loading States ───────────────────────────────────────────────────────
+
+    private bool _isPrintingReceipt;
+    public bool IsPrintingReceipt
+    {
+        get => _isPrintingReceipt;
+        set { _isPrintingReceipt = value; OnPropertyChanged(); }
+    }
+
+    private bool _isPrintingKitchen;
+    public bool IsPrintingKitchen
+    {
+        get => _isPrintingKitchen;
+        set { _isPrintingKitchen = value; OnPropertyChanged(); }
+    }
+
     public OrdersPage(SocketService socketService, PrintManager printManager)
     {
         InitializeComponent();
@@ -32,8 +48,8 @@ public partial class OrdersPage : ContentPage
         _printManager = printManager;
         BindingContext = this;
 
-        PrintReceiptCommand = new Command<Order>(async o => await PrintReceipt(o));
-        PrintKitchenCommand = new Command<Order>(async o => await PrintKitchen(o));
+        PrintReceiptCommand = new Command<Order>(async o => await PrintReceipt(o), _ => !IsPrintingReceipt);
+        PrintKitchenCommand = new Command<Order>(async o => await PrintKitchen(o), _ => !IsPrintingKitchen);
         RefreshCommand = new Command(async () => await RefreshOrders());
         MarkPreparingCommand = new Command<Order>(async o => await UpdateStatus(o, "preparing"));
         MarkServingCommand = new Command<Order>(async o => await UpdateStatus(o, "serving"));
@@ -56,10 +72,7 @@ public partial class OrdersPage : ContentPage
         }
     }
 
-    private void OnConnectionChanged(string status)
-    {
-        SetConnected(status == "connected");
-    }
+    private void OnConnectionChanged(string status) => SetConnected(status == "connected");
 
     private void SetConnected(bool connected)
     {
@@ -84,43 +97,60 @@ public partial class OrdersPage : ContentPage
 
     private async Task PrintReceipt(Order order)
     {
-        var ok = await _printManager.PrintReceiptAsync(order);
-        if (ok)
-            _socketService.MarkPrinted(order.OrderId, receipt: true);
-        else
-            await DisplayAlertAsync("Print Failed", "Could not print receipt. Check printer connection.", "OK");
+        if (IsPrintingReceipt) return;
+        IsPrintingReceipt = true;
+        try
+        {
+            var ok = await _printManager.PrintReceiptAsync(order);
+            if (ok)
+                _socketService.MarkPrinted(order.OrderId, receipt: true);
+            else
+                await DisplayAlertAsync("Print Failed", "Could not print receipt. Check printer connection.", "OK");
+        }
+        finally
+        {
+            IsPrintingReceipt = false;
+        }
     }
 
     private async Task PrintKitchen(Order order)
     {
-        var foodItems = order.Items.Where(i => i.MenuType == "food").ToList();
-        if (!foodItems.Any())
+        if (IsPrintingKitchen) return;
+        IsPrintingKitchen = true;
+        try
         {
-            await DisplayAlertAsync("No Food Items", "This order has no food items for the kitchen.", "OK");
-            return;
+            var foodItems = order.Items.Where(i => i.MenuType == "food").ToList();
+            if (!foodItems.Any())
+            {
+                await DisplayAlertAsync("No Food Items", "This order has no food items for the kitchen.", "OK");
+                return;
+            }
+
+            var kitchenOrder = new Order
+            {
+                OrderId = order.OrderId,
+                OrderNumber = order.OrderNumber,
+                OrderDate = order.OrderDate,
+                TableNumber = order.TableNumber,
+                CustomerName = order.CustomerName,
+                Items = foodItems,
+            };
+
+            var ok = await _printManager.PrintKitchenSlipAsync(kitchenOrder);
+            if (ok)
+                _socketService.MarkPrinted(order.OrderId, kitchen: true);
+            else
+                await DisplayAlertAsync("Print Failed", "Could not print kitchen slip. Check printer connection.", "OK");
         }
-
-        var kitchenOrder = new Order
+        finally
         {
-            OrderId = order.OrderId,
-            OrderNumber = order.OrderNumber,
-            OrderDate = order.OrderDate,
-            TableNumber = order.TableNumber,
-            CustomerName = order.CustomerName,
-            Items = foodItems,
-        };
-
-        var ok = await _printManager.PrintKitchenSlipAsync(kitchenOrder);
-        if (ok)
-            _socketService.MarkPrinted(order.OrderId, kitchen: true);
-        else
-            await DisplayAlertAsync("Print Failed", "Could not print kitchen slip. Check printer connection.", "OK");
+            IsPrintingKitchen = false;
+        }
     }
 
     private async Task UpdateStatus(Order order, string newStatus)
     {
         await _socketService.UpdateOrderStatusAsync(order.OrderId, newStatus);
-        // Optimistic local update
         order.QueueStatus = newStatus;
         var idx = Orders.IndexOf(order);
         if (idx >= 0) Orders[idx] = order;
