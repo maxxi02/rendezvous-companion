@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+  xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  x:Class="rendezvous_companion.Pages.DashboardPage"
+  Title="Dashboard"
+  BackgroundColor="{AppThemeBinding Light=#F3F4F6, Dark=#121212}">
+
+  <ScrollView>
+    <VerticalStackLayout Padding="20" Spacing="16">
+
+      <!-- Header -->
+      <Label Text="Rendezvous Companion"
+             FontSize="24" FontAttributes="Bold"
+             TextColor="{StaticResource Primary}"
+             HorizontalOptions="Center" Margin="0,8,0,0" />
+      <Label Text="Kitchen &amp; Printer Hub"
+             FontSize="13" TextColor="{StaticResource Gray500}"
+             HorizontalOptions="Center" Margin="0,0,0,8" />
+
+      <!-- Socket Connection -->
+      <Border StrokeShape="RoundRectangle 12" StrokeThickness="0"
+              BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}" Padding="20">
+        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+          <BoxView Grid.Column="0" WidthRequest="14" HeightRequest="14" CornerRadius="7"
+                   VerticalOptions="Center" Color="{Binding SocketStatusColor}" />
+          <VerticalStackLayout Grid.Column="1" Spacing="2">
+            <Label Text="Server Connection" FontAttributes="Bold" FontSize="15" />
+            <Label Text="{Binding SocketStatusText}" FontSize="13" TextColor="{StaticResource Gray500}" />
+          </VerticalStackLayout>
+          <Button Grid.Column="2" Text="Reconnect" Clicked="OnReconnectClicked"
+                  BackgroundColor="{StaticResource Primary}" TextColor="White"
+                  CornerRadius="8" FontSize="12" Padding="12,6"
+                  IsVisible="{Binding IsDisconnected}" />
+        </Grid>
+      </Border>
+
+      <!-- Printer Status -->
+      <Border StrokeShape="RoundRectangle 12" StrokeThickness="0"
+              BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}" Padding="20">
+        <VerticalStackLayout Spacing="14">
+          <Label Text="Printer Status" FontSize="18" FontAttributes="Bold"
+                 TextColor="{StaticResource Primary}" />
+
+          <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+            <!-- Receipt -->
+            <Border Grid.Column="0" StrokeShape="RoundRectangle 8" StrokeThickness="1"
+                    Stroke="#28a745" Padding="12"
+                    BackgroundColor="{AppThemeBinding Light=#F0F9F1, Dark=#0F2D15}">
+              <VerticalStackLayout Spacing="6">
+                <Label Text="RECEIPT" FontAttributes="Bold" TextColor="#28a745"
+                       FontSize="11" HorizontalTextAlignment="Center" />
+                <BoxView HeightRequest="10" WidthRequest="10" CornerRadius="5"
+                         HorizontalOptions="Center"
+                         Color="{Binding ReceiptPrinterColor}" />
+                <Label Text="{Binding ReceiptPrinterName}" FontSize="12"
+                       HorizontalTextAlignment="Center" MaxLines="2"
+                       LineBreakMode="TailTruncation" />
+                <Label Text="{Binding LastReceiptPrintTime}" FontSize="10"
+                       TextColor="{StaticResource Gray500}"
+                       HorizontalTextAlignment="Center" />
+              </VerticalStackLayout>
+            </Border>
+
+            <!-- Kitchen -->
+            <Border Grid.Column="1" StrokeShape="RoundRectangle 8" StrokeThickness="1"
+                    Stroke="#fd7e14" Padding="12"
+                    BackgroundColor="{AppThemeBinding Light=#FFF5EB, Dark=#2D1A0F}">
+              <VerticalStackLayout Spacing="6">
+                <Label Text="KITCHEN" FontAttributes="Bold" TextColor="#fd7e14"
+                       FontSize="11" HorizontalTextAlignment="Center" />
+                <BoxView HeightRequest="10" WidthRequest="10" CornerRadius="5"
+                         HorizontalOptions="Center"
+                         Color="{Binding KitchenPrinterColor}" />
+                <Label Text="{Binding KitchenPrinterName}" FontSize="12"
+                       HorizontalTextAlignment="Center" MaxLines="2"
+                       LineBreakMode="TailTruncation" />
+                <Label Text="{Binding LastKitchenPrintTime}" FontSize="10"
+                       TextColor="{StaticResource Gray500}"
+                       HorizontalTextAlignment="Center" />
+              </VerticalStackLayout>
+            </Border>
+          </Grid>
+        </VerticalStackLayout>
+      </Border>
+
+      <!-- Queue Summary -->
+      <Border StrokeShape="RoundRectangle 12" StrokeThickness="0"
+              BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}" Padding="20">
+        <Grid ColumnDefinitions="*, *, *" ColumnSpacing="12">
+          <!-- Pending -->
+          <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="4">
+            <Label Text="{Binding PendingCount}" FontSize="28" FontAttributes="Bold"
+                   TextColor="#fd7e14" HorizontalTextAlignment="Center" />
+            <Label Text="Pending" FontSize="12" TextColor="{StaticResource Gray500}"
+                   HorizontalTextAlignment="Center" />
+          </VerticalStackLayout>
+          <!-- Failed -->
+          <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4">
+            <Label Text="{Binding FailedCount}" FontSize="28" FontAttributes="Bold"
+                   TextColor="#DC3545" HorizontalTextAlignment="Center" />
+            <Label Text="Failed" FontSize="12" TextColor="{StaticResource Gray500}"
+                   HorizontalTextAlignment="Center" />
+          </VerticalStackLayout>
+          <!-- Active Orders -->
+          <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="4">
+            <Label Text="{Binding ActiveOrderCount}" FontSize="28" FontAttributes="Bold"
+                   TextColor="{StaticResource Primary}" HorizontalTextAlignment="Center" />
+            <Label Text="Active Orders" FontSize="12" TextColor="{StaticResource Gray500}"
+                   HorizontalTextAlignment="Center" />
+          </VerticalStackLayout>
+        </Grid>
+      </Border>
+
+      <!-- X-Report Button -->
+      <Border StrokeShape="RoundRectangle 12" StrokeThickness="0"
+              BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}" Padding="20">
+        <VerticalStackLayout Spacing="10">
+          <Label Text="Reports" FontSize="18" FontAttributes="Bold"
+                 TextColor="{StaticResource Primary}" />
+          <Label Text="Print a mid-session X-Reading directly from the companion app."
+                 FontSize="13" TextColor="{StaticResource Gray500}" />
+          <Button Text="Print X-Report" Clicked="OnPrintXReportClicked"
+                  BackgroundColor="#17a2b8" TextColor="White"
+                  CornerRadius="8" HeightRequest="48" FontAttributes="Bold" />
+        </VerticalStackLayout>
+      </Border>
+
+      <!-- Theme Toggle -->
+      <Border StrokeShape="RoundRectangle 12" StrokeThickness="0"
+              BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}" Padding="20">
+        <Grid ColumnDefinitions="*, Auto">
+          <VerticalStackLayout Grid.Column="0" Spacing="2">
+            <Label Text="Dark Mode" FontAttributes="Bold" FontSize="15" />
+            <Label Text="Toggle app appearance" FontSize="13"
+                   TextColor="{StaticResource Gray500}" />
+          </VerticalStackLayout>
+          <Switch Grid.Column="1" VerticalOptions="Center"
+                  IsToggled="{Binding IsDarkMode}"
+                  Toggled="OnThemeToggled" />
+        </Grid>
+      </Border>
+
+    </VerticalStackLayout>
+  </ScrollView>
+</ContentPage>

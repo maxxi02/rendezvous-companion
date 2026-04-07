@@ -14,6 +14,8 @@
             <!-- Converters available app-wide -->
             <converters:InverseBoolConverter  x:Key="InverseBoolConverter" />
             <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter" />
+            <converters:IsFailedConverter x:Key="IsFailedConverter" />
+            <converters:QueueStatusColorConverter x:Key="QueueStatusColorConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

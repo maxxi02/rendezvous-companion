@@ -3,13 +3,18 @@
     x:Class="rendezvous_companion.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:rendezvous_companion"
     xmlns:pages="clr-namespace:rendezvous_companion.Pages"
-    Title="rendezvous_companion">
+    Title="Rendezvous Companion">
 
     <TabBar>
+        <Tab Title="Dashboard" Icon="dotnet_bot.png">
+            <ShellContent ContentTemplate="{DataTemplate pages:DashboardPage}" />
+        </Tab>
         <Tab Title="Orders" Icon="dotnet_bot.png">
             <ShellContent ContentTemplate="{DataTemplate pages:OrdersPage}" />
+        </Tab>
+        <Tab Title="Queue" Icon="dotnet_bot.png">
+            <ShellContent ContentTemplate="{DataTemplate pages:PrintQueuePage}" />
         </Tab>
         <Tab Title="Settings" Icon="dotnet_bot.png">
             <ShellContent ContentTemplate="{DataTemplate pages:PrinterSettingsPage}" />

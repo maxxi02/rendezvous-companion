@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Controls.Hosting; // ← add this
-using Microsoft.Maui.Hosting; // ← add this
+using Microsoft.Extensions.Logging;
 using rendezvous_companion.Pages;
 using rendezvous_companion.Services;
 
@@ -12,23 +10,29 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder();
         builder
-            .UseMauiApp<App>() // ← change UseMaui() to UseMauiApp<App>()
+            .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
-        builder.Services.AddSingleton<App>();
+
+        // ─── Core Services ────────────────────────────────────────────────────
+        builder.Services.AddSingleton<AlertService>();
+        builder.Services.AddSingleton<PrintQueueService>();
         builder.Services.AddSingleton<PrintManager>();
         builder.Services.AddSingleton<SocketService>();
+
+        // ─── Pages ────────────────────────────────────────────────────────────
+        builder.Services.AddTransient<DashboardPage>();
         builder.Services.AddTransient<OrdersPage>();
+        builder.Services.AddTransient<PrintQueuePage>();
         builder.Services.AddTransient<PrinterSettingsPage>();
 
 #if ANDROID
         builder.Services.AddSingleton<
             rendezvous_companion.Services.IAppService,
-            rendezvous_companion.Platforms.Android.AndroidAppService
-        >();
+            rendezvous_companion.Platforms.Android.AndroidAppService>();
 #endif
 
 #if DEBUG
