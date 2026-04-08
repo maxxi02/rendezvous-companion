@@ -53,7 +53,13 @@ public class SocketService
 
             var printManager = App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
             if (printManager != null)
+            {
                 _ = ReportPrinterStatusAsync(printManager.IsReceiptPrinterConnected, printManager.IsKitchenPrinterConnected);
+
+                // Re-broadcast whenever a printer connects or disconnects
+                printManager.PrinterStatusChanged += () =>
+                    _ = ReportPrinterStatusAsync(printManager.IsReceiptPrinterConnected, printManager.IsKitchenPrinterConnected);
+            }
 
             _client.EmitAsync("order:queue:list",
                 new { statuses = new[] { "pending_payment", "queueing", "preparing", "serving" } });
@@ -278,6 +284,14 @@ public class SocketService
             {
                 Console.WriteLine($"[Socket] table:updated error: {ex.Message}");
             }
+        });
+
+        // ── POS requests a fresh printer status report ──
+        _client.On("companion:ping", _ =>
+        {
+            var printManager = App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
+            if (printManager != null)
+                _ = ReportPrinterStatusAsync(printManager.IsReceiptPrinterConnected, printManager.IsKitchenPrinterConnected);
         });
     }
 
