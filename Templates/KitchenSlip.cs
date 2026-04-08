@@ -33,7 +33,7 @@ public static class KitchenSlip
             AlignCenter,
             BoldOn,
             LargeFontOn,
-            Line("** KITCHEN **"),
+            Line("KITCHEN"),
             NormalFont,
             BoldOff,
             NewLine,
