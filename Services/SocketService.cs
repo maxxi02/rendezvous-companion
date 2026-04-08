@@ -287,11 +287,11 @@ public class SocketService
         });
 
         // ── POS requests a fresh printer status report ──
-        _client.On("companion:ping", _ =>
+        _client.On("companion:ping", response =>
         {
             var printManager = App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
             if (printManager != null)
-                _ = ReportPrinterStatusAsync(printManager.IsReceiptPrinterConnected, printManager.IsKitchenPrinterConnected);
+                Task.Run(() => ReportPrinterStatusAsync(printManager.IsReceiptPrinterConnected, printManager.IsKitchenPrinterConnected));
         });
     }
 
