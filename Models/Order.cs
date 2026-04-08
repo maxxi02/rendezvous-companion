@@ -127,6 +127,9 @@ public class OrderItem
     [JsonPropertyName("menuType")]
     public string MenuType { get; set; } = "food"; // "food" or "drink"
 
+    [JsonPropertyName("isCookable")]
+    public bool IsCookable { get; set; } = false;
+
     public decimal TotalSum => Quantity * Price;
 }
 
