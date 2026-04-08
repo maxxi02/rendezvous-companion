@@ -21,7 +21,7 @@ public static class CustomerReceipt
 
         // REPRINT banner
         if (order.IsReprint)
-            parts.AddRange(new[] { AlignCenter, BoldOn, Line("*** REPRINT ***"), BoldOff });
+            parts.AddRange(new[] { AlignCenter, BoldOn, Line("REPRINT"), BoldOff });
 
         // Business logo from settings
         if (!string.IsNullOrEmpty(order.BusinessLogo))
