@@ -8,7 +8,7 @@ public static class KitchenSlip
     public static byte[] Build(Order order)
     {
         var foodItems = order.Items
-            .Where(i => i.IsCookable || string.IsNullOrEmpty(i.MenuType) || i.MenuType.Equals("food", StringComparison.OrdinalIgnoreCase))
+            .Where(i => i.IsCookable)
             .ToList();
 
         if (foodItems.Count == 0)
