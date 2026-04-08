@@ -7,7 +7,7 @@ public static class CustomerReceipt
 {
     public static byte[] Build(Order order)
     {
-        var storeName    = !string.IsNullOrEmpty(order.BusinessName) ? order.BusinessName : "RENDEZVOUS";
+        var storeName    = order.BusinessName;
         var storeAddress = order.BusinessAddress;
         var storeTel     = order.BusinessPhone;
         var receiptMsg   = order.ReceiptMessage;
@@ -27,14 +27,17 @@ public static class CustomerReceipt
         if (!string.IsNullOrEmpty(order.BusinessLogo))
             parts.Add(Base64Image(order.BusinessLogo));
 
-        // Store name — normal bold, no large font
-        parts.AddRange(new[]
+        // Store name — only print if provided
+        if (!string.IsNullOrEmpty(storeName))
         {
-            AlignCenter,
-            BoldOn,
-            Line(storeName),
-            BoldOff,
-        });
+            parts.AddRange(new[]
+            {
+                AlignCenter,
+                BoldOn,
+                Line(storeName),
+                BoldOff,
+            });
+        }
 
         if (!string.IsNullOrEmpty(storeAddress))
             parts.Add(Line(storeAddress));
