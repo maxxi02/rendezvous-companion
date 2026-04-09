@@ -287,11 +287,12 @@ public class SocketService
         });
 
         // ── POS requests a fresh printer status report ──
+        // Use a dedicated bypass event so the server throttle doesn't suppress the reply.
         _client.On("companion:ping", response =>
         {
             var printManager = App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
             if (printManager != null)
-                Task.Run(() => ReportPrinterStatusAsync(printManager.IsReceiptPrinterConnected, printManager.IsKitchenPrinterConnected));
+                Task.Run(() => ReportPrinterStatusForcedAsync(printManager.IsReceiptPrinterConnected, printManager.IsKitchenPrinterConnected));
         });
     }
 
@@ -335,6 +336,13 @@ public class SocketService
     {
         if (!_client.Connected) return;
         await _client.EmitAsync("companion:printer:status", new { usb, bt = bluetooth });
+    }
+
+    // Bypasses the server-side throttle — used when responding to a companion:ping.
+    public async Task ReportPrinterStatusForcedAsync(bool usb, bool bluetooth)
+    {
+        if (!_client.Connected) return;
+        await _client.EmitAsync("companion:printer:status:forced", new { usb, bt = bluetooth });
     }
 
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
