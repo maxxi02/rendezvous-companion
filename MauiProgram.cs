@@ -25,8 +25,6 @@ public static class MauiProgram
 
         // ─── Pages ────────────────────────────────────────────────────────────
         builder.Services.AddTransient<DashboardPage>();
-        builder.Services.AddTransient<OrdersPage>();
-        builder.Services.AddTransient<PrintQueuePage>();
         builder.Services.AddTransient<PrinterSettingsPage>();
 
 #if ANDROID
