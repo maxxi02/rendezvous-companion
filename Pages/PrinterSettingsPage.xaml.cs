@@ -45,6 +45,7 @@ public partial class PrinterSettingsPage : ContentPage
         _printManager = printManager;
         BindingContext = this;
         UpdateRoleSummary();
+        UpdateThemeButtons(DevicePreferencesService.LoadTheme());
     }
 
     protected override async void OnAppearing()
@@ -380,5 +381,32 @@ public partial class PrinterSettingsPage : ContentPage
             Environment.Exit(0);
 #endif
         }
+    }
+
+    // ─── Theme ────────────────────────────────────────────────────────────────
+
+    private void OnThemeSystemClicked(object? sender, EventArgs e) => ApplyTheme(AppTheme.Unspecified);
+    private void OnThemeLightClicked(object? sender, EventArgs e) => ApplyTheme(AppTheme.Light);
+    private void OnThemeDarkClicked(object? sender, EventArgs e) => ApplyTheme(AppTheme.Dark);
+
+    private void ApplyTheme(AppTheme theme)
+    {
+        Application.Current!.UserAppTheme = theme;
+        DevicePreferencesService.SaveTheme(theme);
+        UpdateThemeButtons(theme);
+    }
+
+    private void UpdateThemeButtons(AppTheme active)
+    {
+        var primary = (Color)Application.Current!.Resources["Primary"];
+        var gray = (Color)Application.Current!.Resources["Gray400"];
+
+        ThemeSystemBtn.BackgroundColor = active == AppTheme.Unspecified ? primary : gray;
+        ThemeLightBtn.BackgroundColor  = active == AppTheme.Light        ? primary : gray;
+        ThemeDarkBtn.BackgroundColor   = active == AppTheme.Dark         ? primary : gray;
+
+        ThemeSystemBtn.TextColor = Colors.White;
+        ThemeLightBtn.TextColor  = Colors.White;
+        ThemeDarkBtn.TextColor   = Colors.White;
     }
 }
