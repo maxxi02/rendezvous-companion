@@ -294,6 +294,24 @@ public class SocketService
             if (printManager != null)
                 Task.Run(() => ReportPrinterStatusForcedAsync(printManager.IsReceiptPrinterConnected, printManager.IsKitchenPrinterConnected));
         });
+
+        // ── POS requests disconnection of a specific printer ──
+        _client.On("companion:printer:disconnect", response =>
+        {
+            var printManager = App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
+            if (printManager == null) return;
+
+            var payload = response.GetValue<System.Text.Json.JsonElement>();
+            var target = payload.GetProperty("target").GetString();
+
+            Task.Run(async () =>
+            {
+                if (target == "usb")
+                    await printManager.DisconnectReceiptAsync();
+                else if (target == "bt")
+                    await printManager.DisconnectKitchenAsync();
+            });
+        });
     }
 
     // ─── Order Status Emit (from companion to server) ─────────────────────────

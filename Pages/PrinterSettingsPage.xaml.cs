@@ -255,6 +255,18 @@ public partial class PrinterSettingsPage : ContentPage
         UpdateRoleSummary();
     }
 
+    private async void OnDisconnectReceiptClicked(object? sender, EventArgs e)
+    {
+        await _printManager.DisconnectReceiptAsync();
+        UpdateRoleSummary();
+    }
+
+    private async void OnDisconnectKitchenClicked(object? sender, EventArgs e)
+    {
+        await _printManager.DisconnectKitchenAsync();
+        UpdateRoleSummary();
+    }
+
     // ─── Test Print ───────────────────────────────────────────────
 
     private async void OnTestReceiptClicked(object? sender, EventArgs e)
@@ -299,12 +311,14 @@ public partial class PrinterSettingsPage : ContentPage
                 $"{_printManager.ReceiptPrinterDevice.Name} [{_printManager.ReceiptPrinterDevice.ConnectionType}]";
             ReceiptRoleLabel.TextColor = Colors.Green;
             TestReceiptButton.IsEnabled = true;
+            DisconnectReceiptButton.IsEnabled = true;
         }
         else
         {
             ReceiptRoleLabel.Text = "Not assigned";
             ReceiptRoleLabel.TextColor = Colors.Red;
             TestReceiptButton.IsEnabled = false;
+            DisconnectReceiptButton.IsEnabled = false;
         }
 
         // Kitchen printer
@@ -314,12 +328,14 @@ public partial class PrinterSettingsPage : ContentPage
                 $"{_printManager.KitchenPrinterDevice.Name} [{_printManager.KitchenPrinterDevice.ConnectionType}]";
             KitchenRoleLabel.TextColor = Colors.Green;
             TestKitchenButton.IsEnabled = true;
+            DisconnectKitchenButton.IsEnabled = true;
         }
         else
         {
             KitchenRoleLabel.Text = "Not assigned";
             KitchenRoleLabel.TextColor = Colors.Red;
             TestKitchenButton.IsEnabled = false;
+            DisconnectKitchenButton.IsEnabled = false;
         }
     }
 

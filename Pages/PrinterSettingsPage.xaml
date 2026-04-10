@@ -197,6 +197,10 @@
                     </HorizontalStackLayout>
                   </Border>
                 </Grid>
+                <Button x:Name="DisconnectReceiptButton" Text="Disconnect"
+                        Clicked="OnDisconnectReceiptClicked"
+                        BackgroundColor="#DC3545" TextColor="White"
+                        CornerRadius="6" FontSize="11" Padding="4" IsEnabled="False" />
               </VerticalStackLayout>
             </Border>
             <!-- Kitchen -->
@@ -226,6 +230,10 @@
                     </HorizontalStackLayout>
                   </Border>
                 </Grid>
+                <Button x:Name="DisconnectKitchenButton" Text="Disconnect"
+                        Clicked="OnDisconnectKitchenClicked"
+                        BackgroundColor="#DC3545" TextColor="White"
+                        CornerRadius="6" FontSize="11" Padding="4" IsEnabled="False" />
               </VerticalStackLayout>
             </Border>
           </Grid>

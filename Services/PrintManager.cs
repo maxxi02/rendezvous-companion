@@ -252,6 +252,26 @@ public class PrintManager
         PrinterStatusChanged?.Invoke();
     }
 
+    public async Task DisconnectReceiptAsync()
+    {
+        if (_receiptPrinter != null) await _receiptPrinter.DisconnectAsync();
+        _receiptPrinter = null;
+        ReceiptPrinterDevice = null;
+        DevicePreferencesService.ClearReceiptPrinter();
+        _ = ReportStatusAsync();
+        PrinterStatusChanged?.Invoke();
+    }
+
+    public async Task DisconnectKitchenAsync()
+    {
+        if (_kitchenPrinter != null) await _kitchenPrinter.DisconnectAsync();
+        _kitchenPrinter = null;
+        KitchenPrinterDevice = null;
+        DevicePreferencesService.ClearKitchenPrinter();
+        _ = ReportStatusAsync();
+        PrinterStatusChanged?.Invoke();
+    }
+
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
     private void EnqueueFailed(Order order, PrintJobType type)
