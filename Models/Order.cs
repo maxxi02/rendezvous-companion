@@ -130,7 +130,19 @@ public class OrderItem
     [JsonPropertyName("isCookable")]
     public bool IsCookable { get; set; } = false;
 
+    [JsonPropertyName("addons")]
+    public List<OrderAddon> Addons { get; set; } = new();
+
     public decimal TotalSum => Quantity * Price;
+}
+
+public class OrderAddon
+{
+    [JsonPropertyName("addonName")]
+    public string AddonName { get; set; } = string.Empty;
+
+    [JsonPropertyName("price")]
+    public decimal Price { get; set; }
 }
 
 public class SplitPayment

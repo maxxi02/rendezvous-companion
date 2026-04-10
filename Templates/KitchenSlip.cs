@@ -75,6 +75,8 @@ public static class KitchenSlip
 
             if (!string.IsNullOrEmpty(item.Notes))
                 parts.Add(Line($"  >> {item.Notes}"));
+            foreach (var addon in item.Addons)
+                parts.Add(Line($"  + {addon.AddonName}"));
 
             parts.Add(NewLine);
         }

@@ -7,7 +7,6 @@ public static class CustomerReceipt
 {
     public static byte[] Build(Order order)
     {
-        var storeName    = order.BusinessName;
         var storeAddress = order.BusinessAddress;
         var storeTel     = order.BusinessPhone;
         var receiptMsg   = order.ReceiptMessage;
@@ -26,18 +25,6 @@ public static class CustomerReceipt
         // Business logo from settings
         if (!string.IsNullOrEmpty(order.BusinessLogo))
             parts.Add(Base64Image(order.BusinessLogo));
-
-        // Store name — only print if provided
-        if (!string.IsNullOrEmpty(storeName))
-        {
-            parts.AddRange(new[]
-            {
-                AlignCenter,
-                BoldOn,
-                Line(storeName),
-                BoldOff,
-            });
-        }
 
         if (!string.IsNullOrEmpty(storeAddress))
             parts.Add(Line(storeAddress));
@@ -83,6 +70,13 @@ public static class CustomerReceipt
             parts.Add(OrderItemLine(item.Name, item.Quantity, effectivePrice));
             if (item.HasDiscount)
                 parts.Add(Line("  [20% Senior/PWD Discount]"));
+            foreach (var addon in item.Addons)
+            {
+                var addonLabel = addon.Price > 0
+                    ? $"  + {addon.AddonName} (P{addon.Price:F2})"
+                    : $"  + {addon.AddonName}";
+                parts.Add(Line(addonLabel));
+            }
         }
 
         parts.AddRange(new[]
