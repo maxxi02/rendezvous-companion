@@ -197,6 +197,10 @@
                     </HorizontalStackLayout>
                   </Border>
                 </Grid>
+                <Button x:Name="DisconnectReceiptButton" Text="Disconnect"
+                        Clicked="OnDisconnectReceiptClicked"
+                        BackgroundColor="#DC3545" TextColor="White"
+                        CornerRadius="6" FontSize="11" Padding="4" IsEnabled="False" />
               </VerticalStackLayout>
             </Border>
             <!-- Kitchen -->
@@ -226,9 +230,32 @@
                     </HorizontalStackLayout>
                   </Border>
                 </Grid>
+                <Button x:Name="DisconnectKitchenButton" Text="Disconnect"
+                        Clicked="OnDisconnectKitchenClicked"
+                        BackgroundColor="#DC3545" TextColor="White"
+                        CornerRadius="6" FontSize="11" Padding="4" IsEnabled="False" />
               </VerticalStackLayout>
             </Border>
           </Grid>
+        </VerticalStackLayout>
+      </Border>
+
+      <!-- App Theme -->
+      <Border StrokeShape="RoundRectangle 12" StrokeThickness="0"
+              BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}" Padding="20">
+        <VerticalStackLayout Spacing="12">
+          <Label Text="App Theme" FontSize="20" FontAttributes="Bold"
+                 TextColor="{StaticResource Primary}" />
+          <Label Text="Choose how the app looks. System follows your device setting."
+                 FontSize="14" TextColor="{StaticResource Gray500}" />
+          <HorizontalStackLayout Spacing="10">
+            <Button x:Name="ThemeSystemBtn" Text="System" Clicked="OnThemeSystemClicked"
+                    CornerRadius="8" HeightRequest="40" FontAttributes="Bold" Padding="16,0" />
+            <Button x:Name="ThemeLightBtn" Text="Light" Clicked="OnThemeLightClicked"
+                    CornerRadius="8" HeightRequest="40" FontAttributes="Bold" Padding="16,0" />
+            <Button x:Name="ThemeDarkBtn" Text="Dark" Clicked="OnThemeDarkClicked"
+                    CornerRadius="8" HeightRequest="40" FontAttributes="Bold" Padding="16,0" />
+          </HorizontalStackLayout>
         </VerticalStackLayout>
       </Border>
 

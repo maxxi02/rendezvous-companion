@@ -121,14 +121,15 @@ public class PrintManager
 
     public async Task<bool> PrintKitchenSlipAsync(Order order)
     {
-        var printer = _kitchenPrinter ?? _receiptPrinter;
-        if (printer?.IsConnected != true)
+        // Only print kitchen slip if a dedicated kitchen printer is connected.
+        // Do NOT fall back to receipt printer — that causes duplicate prints on a single device.
+        if (_kitchenPrinter?.IsConnected != true)
         {
             EnqueueFailed(order, PrintJobType.Kitchen);
             return false;
         }
         var data = KitchenSlip.Build(order);
-        var ok = await printer.PrintAsync(data);
+        var ok = await _kitchenPrinter.PrintAsync(data);
         if (!ok)
         {
             EnqueueFailed(order, PrintJobType.Kitchen);
@@ -247,6 +248,26 @@ public class PrintManager
     {
         if (_receiptPrinter != null) await _receiptPrinter.DisconnectAsync();
         if (_kitchenPrinter != null) await _kitchenPrinter.DisconnectAsync();
+        _ = ReportStatusAsync();
+        PrinterStatusChanged?.Invoke();
+    }
+
+    public async Task DisconnectReceiptAsync()
+    {
+        if (_receiptPrinter != null) await _receiptPrinter.DisconnectAsync();
+        _receiptPrinter = null;
+        ReceiptPrinterDevice = null;
+        DevicePreferencesService.ClearReceiptPrinter();
+        _ = ReportStatusAsync();
+        PrinterStatusChanged?.Invoke();
+    }
+
+    public async Task DisconnectKitchenAsync()
+    {
+        if (_kitchenPrinter != null) await _kitchenPrinter.DisconnectAsync();
+        _kitchenPrinter = null;
+        KitchenPrinterDevice = null;
+        DevicePreferencesService.ClearKitchenPrinter();
         _ = ReportStatusAsync();
         PrinterStatusChanged?.Invoke();
     }

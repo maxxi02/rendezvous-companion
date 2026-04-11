@@ -8,7 +8,7 @@ public static class KitchenSlip
     public static byte[] Build(Order order)
     {
         var foodItems = order.Items
-            .Where(i => string.IsNullOrEmpty(i.MenuType) || i.MenuType.Equals("food", StringComparison.OrdinalIgnoreCase))
+            .Where(i => i.IsCookable)
             .ToList();
 
         if (foodItems.Count == 0)
@@ -33,7 +33,7 @@ public static class KitchenSlip
             AlignCenter,
             BoldOn,
             LargeFontOn,
-            Line("** KITCHEN **"),
+            Line("KITCHEN"),
             NormalFont,
             BoldOff,
             NewLine,
@@ -75,6 +75,8 @@ public static class KitchenSlip
 
             if (!string.IsNullOrEmpty(item.Notes))
                 parts.Add(Line($"  >> {item.Notes}"));
+            foreach (var addon in item.Addons)
+                parts.Add(Line($"  + {addon.AddonName}"));
 
             parts.Add(NewLine);
         }

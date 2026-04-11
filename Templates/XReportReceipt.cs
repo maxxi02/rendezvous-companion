@@ -21,9 +21,6 @@ public static class XReportReceipt
         };
 
         // ── Header ───────────────────────────────────────────────────
-        if (!string.IsNullOrEmpty(report.BusinessLogo))
-            parts.Add(Base64Image(report.BusinessLogo));
-
         parts.Add(BoldOn);
         parts.Add(Line(report.BusinessName ?? "Business Name"));
         parts.Add(BoldOff);
@@ -170,7 +167,7 @@ public static class XReportReceipt
             parts.Add(Line("POS System Receipt"));
 
         parts.Add(BoldOn);
-        parts.Add(Line("-- END OF X-REPORT --"));
+        parts.Add(Line("END OF X-REPORT"));
         parts.Add(BoldOff);
 
         parts.Add(FeedLines3);

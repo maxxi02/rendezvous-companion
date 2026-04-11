@@ -15,12 +15,6 @@ public static class ZReportReceipt
             AlignCenter,
         };
 
-        // Print logo if available
-        if (!string.IsNullOrEmpty(report.BusinessLogo))
-        {
-            parts.Add(Base64Image(report.BusinessLogo));
-        }
-
         parts.AddRange(new[]
         {
             // Header

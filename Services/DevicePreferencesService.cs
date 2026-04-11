@@ -67,4 +67,13 @@ public static class DevicePreferencesService
         Preferences.Remove(KitchenNameKey);
         Preferences.Remove(KitchenTypeKey);
     }
+
+    // ─── Theme ────────────────────────────────────────────────────────────────
+    private const string ThemeKey = "app_theme";
+
+    public static void SaveTheme(AppTheme theme) =>
+        Preferences.Set(ThemeKey, (int)theme);
+
+    public static AppTheme LoadTheme() =>
+        (AppTheme)Preferences.Get(ThemeKey, (int)AppTheme.Unspecified);
 }

@@ -10,12 +10,6 @@
         <Tab Title="Dashboard" Icon="tab_dashboard.png">
             <ShellContent ContentTemplate="{DataTemplate pages:DashboardPage}" />
         </Tab>
-        <Tab Title="Orders" Icon="tab_orders.png">
-            <ShellContent ContentTemplate="{DataTemplate pages:OrdersPage}" />
-        </Tab>
-        <Tab Title="Queue" Icon="tab_queue.png">
-            <ShellContent ContentTemplate="{DataTemplate pages:PrintQueuePage}" />
-        </Tab>
         <Tab Title="Settings" Icon="tab_settings.png">
             <ShellContent ContentTemplate="{DataTemplate pages:PrinterSettingsPage}" />
         </Tab>

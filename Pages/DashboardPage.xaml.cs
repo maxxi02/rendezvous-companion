@@ -1,4 +1,3 @@
-using rendezvous_companion.Models;
 using rendezvous_companion.Services;
 
 namespace rendezvous_companion.Pages;
@@ -7,9 +6,6 @@ public partial class DashboardPage : ContentPage
 {
     private readonly SocketService _socket;
     private readonly PrintManager _printManager;
-    private readonly PrintQueueService _queue;
-
-    // ─── Bindable Properties ──────────────────────────────────────────────────
 
     public Color SocketStatusColor => _socket.IsConnected
         ? Color.FromArgb("#28a745") : Color.FromArgb("#DC3545");
@@ -24,14 +20,6 @@ public partial class DashboardPage : ContentPage
     public string ReceiptPrinterName => _printManager.ReceiptPrinterDevice?.Name ?? "Not connected";
     public string KitchenPrinterName => _printManager.KitchenPrinterDevice?.Name ?? "Not connected";
 
-    public int PendingCount => _queue.PendingCount;
-    public int FailedCount => _queue.FailedCount;
-    public int ActiveOrderCount => _socket.Orders.Count;
-
-    public bool IsDarkMode => Application.Current?.UserAppTheme == AppTheme.Dark;
-
-    // ─── Loading States ───────────────────────────────────────────────────────
-
     private bool _isReconnecting;
     public bool IsReconnecting
     {
@@ -39,25 +27,15 @@ public partial class DashboardPage : ContentPage
         set { _isReconnecting = value; OnPropertyChanged(); }
     }
 
-    private bool _isXReportLoading;
-    public bool IsXReportLoading
-    {
-        get => _isXReportLoading;
-        set { _isXReportLoading = value; OnPropertyChanged(); }
-    }
-
-    public DashboardPage(SocketService socket, PrintManager printManager, PrintQueueService queue)
+    public DashboardPage(SocketService socket, PrintManager printManager)
     {
         InitializeComponent();
         _socket = socket;
         _printManager = printManager;
-        _queue = queue;
         BindingContext = this;
 
         _socket.ConnectionStatusChanged += _ => RefreshAll();
         _printManager.PrinterStatusChanged += RefreshAll;
-        _queue.QueueChanged += RefreshAll;
-        _socket.Orders.CollectionChanged += (_, _) => RefreshAll();
     }
 
     protected override void OnAppearing()
@@ -77,9 +55,6 @@ public partial class DashboardPage : ContentPage
             OnPropertyChanged(nameof(KitchenPrinterColor));
             OnPropertyChanged(nameof(ReceiptPrinterName));
             OnPropertyChanged(nameof(KitchenPrinterName));
-            OnPropertyChanged(nameof(PendingCount));
-            OnPropertyChanged(nameof(FailedCount));
-            OnPropertyChanged(nameof(ActiveOrderCount));
         });
     }
 
@@ -98,45 +73,5 @@ public partial class DashboardPage : ContentPage
         {
             IsReconnecting = false;
         }
-    }
-
-    private async void OnPrintXReportClicked(object? sender, EventArgs e)
-    {
-        if (!_printManager.IsReceiptPrinterConnected)
-        {
-            await DisplayAlertAsync("No Printer", "Receipt printer is not connected.", "OK");
-            return;
-        }
-
-        bool confirm = await DisplayAlertAsync("Print X-Report",
-            "Print a mid-session X-Reading report now?", "Print", "Cancel");
-        if (!confirm) return;
-
-        IsXReportLoading = true;
-        try
-        {
-            var report = new ZReport
-            {
-                BusinessName = "Rendezvous Cafe",
-                Today = DateTime.Now.ToString("MMMM dd, yyyy"),
-                TimeNow = DateTime.Now.ToString("hh:mm tt"),
-                IsXReading = true,
-                Transactions = _socket.Orders.Count,
-            };
-
-            var ok = await _printManager.PrintZReportAsync(report);
-            await DisplayAlertAsync(ok ? "Printed" : "Failed",
-                ok ? "X-Report sent to printer." : "Could not print. Check printer connection.", "OK");
-        }
-        finally
-        {
-            IsXReportLoading = false;
-        }
-    }
-
-    private void OnThemeToggled(object? sender, ToggledEventArgs e)
-    {
-        Application.Current!.UserAppTheme = e.Value ? AppTheme.Dark : AppTheme.Light;
-        OnPropertyChanged(nameof(IsDarkMode));
     }
 }

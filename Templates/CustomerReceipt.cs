@@ -7,7 +7,6 @@ public static class CustomerReceipt
 {
     public static byte[] Build(Order order)
     {
-        var storeName    = !string.IsNullOrEmpty(order.BusinessName) ? order.BusinessName : "RENDEZVOUS";
         var storeAddress = order.BusinessAddress;
         var storeTel     = order.BusinessPhone;
         var receiptMsg   = order.ReceiptMessage;
@@ -21,20 +20,11 @@ public static class CustomerReceipt
 
         // REPRINT banner
         if (order.IsReprint)
-            parts.AddRange(new[] { AlignCenter, BoldOn, Line("*** REPRINT ***"), BoldOff });
+            parts.AddRange(new[] { AlignCenter, BoldOn, Line("REPRINT"), BoldOff });
 
         // Business logo from settings
         if (!string.IsNullOrEmpty(order.BusinessLogo))
             parts.Add(Base64Image(order.BusinessLogo));
-
-        // Store name — normal bold, no large font
-        parts.AddRange(new[]
-        {
-            AlignCenter,
-            BoldOn,
-            Line(storeName),
-            BoldOff,
-        });
 
         if (!string.IsNullOrEmpty(storeAddress))
             parts.Add(Line(storeAddress));
@@ -80,6 +70,13 @@ public static class CustomerReceipt
             parts.Add(OrderItemLine(item.Name, item.Quantity, effectivePrice));
             if (item.HasDiscount)
                 parts.Add(Line("  [20% Senior/PWD Discount]"));
+            foreach (var addon in item.Addons)
+            {
+                var addonLabel = addon.Price > 0
+                    ? $"  + {addon.AddonName} (P{addon.Price:F2})"
+                    : $"  + {addon.AddonName}";
+                parts.Add(Line(addonLabel));
+            }
         }
 
         parts.AddRange(new[]

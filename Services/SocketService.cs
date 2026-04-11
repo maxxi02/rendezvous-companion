@@ -53,7 +53,13 @@ public class SocketService
 
             var printManager = App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
             if (printManager != null)
+            {
                 _ = ReportPrinterStatusAsync(printManager.IsReceiptPrinterConnected, printManager.IsKitchenPrinterConnected);
+
+                // Re-broadcast whenever a printer connects or disconnects
+                printManager.PrinterStatusChanged += () =>
+                    _ = ReportPrinterStatusAsync(printManager.IsReceiptPrinterConnected, printManager.IsKitchenPrinterConnected);
+            }
 
             _client.EmitAsync("order:queue:list",
                 new { statuses = new[] { "pending_payment", "queueing", "preparing", "serving" } });
@@ -279,6 +285,33 @@ public class SocketService
                 Console.WriteLine($"[Socket] table:updated error: {ex.Message}");
             }
         });
+
+        // ── POS requests a fresh printer status report ──
+        // Use a dedicated bypass event so the server throttle doesn't suppress the reply.
+        _client.On("companion:ping", response =>
+        {
+            var printManager = App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
+            if (printManager != null)
+                Task.Run(() => ReportPrinterStatusForcedAsync(printManager.IsReceiptPrinterConnected, printManager.IsKitchenPrinterConnected));
+        });
+
+        // ── POS requests disconnection of a specific printer ──
+        _client.On("companion:printer:disconnect", response =>
+        {
+            var printManager = App.Current?.Handler.MauiContext?.Services.GetService<PrintManager>();
+            if (printManager == null) return;
+
+            var payload = response.GetValue<System.Text.Json.JsonElement>();
+            var target = payload.GetProperty("target").GetString();
+
+            Task.Run(async () =>
+            {
+                if (target == "usb")
+                    await printManager.DisconnectReceiptAsync();
+                else if (target == "bt")
+                    await printManager.DisconnectKitchenAsync();
+            });
+        });
     }
 
     // ─── Order Status Emit (from companion to server) ─────────────────────────
@@ -321,6 +354,13 @@ public class SocketService
     {
         if (!_client.Connected) return;
         await _client.EmitAsync("companion:printer:status", new { usb, bt = bluetooth });
+    }
+
+    // Bypasses the server-side throttle — used when responding to a companion:ping.
+    public async Task ReportPrinterStatusForcedAsync(bool usb, bool bluetooth)
+    {
+        if (!_client.Connected) return;
+        await _client.EmitAsync("companion:printer:status:forced", new { usb, bt = bluetooth });
     }
 
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
