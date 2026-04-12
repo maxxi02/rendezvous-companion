@@ -74,9 +74,23 @@ public static class KitchenSlip
             });
 
             if (!string.IsNullOrEmpty(item.Notes))
+            {
+                parts.Add(BoldOn);
                 parts.Add(Line($"  >> {item.Notes}"));
-            foreach (var addon in item.Addons)
-                parts.Add(Line($"  + {addon.AddonName}"));
+                parts.Add(BoldOff);
+            }
+
+            if (item.Addons != null && item.Addons.Count > 0)
+            {
+                parts.Add(DoubleHeightOn);
+                parts.Add(BoldOn);
+                foreach (var addon in item.Addons)
+                {
+                    parts.Add(Line($"  + {addon.AddonName}"));
+                }
+                parts.Add(NormalFont);
+                parts.Add(BoldOff);
+            }
 
             parts.Add(NewLine);
         }

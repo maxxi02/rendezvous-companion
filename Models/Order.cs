@@ -100,11 +100,54 @@ public class Order
     [JsonPropertyName("isReprint")]
     public bool IsReprint { get; set; } = false;
 
+    // Receipt sections config (from POS receipt settings)
+    [JsonPropertyName("sections")]
+    public ReceiptSections? Sections { get; set; }
+
     // Queue
     [JsonPropertyName("queueStatus")]
     public string QueueStatus { get; set; } = "pending_payment";
 
     public decimal Tax => Subtotal * 0.12m; // 12% VAT
+}
+
+public class ReceiptSectionConfig
+{
+    [JsonPropertyName("header")]
+    public bool Header { get; set; } = true;
+
+    [JsonPropertyName("footer")]
+    public bool Footer { get; set; } = false;
+
+    [JsonPropertyName("disabled")]
+    public bool Disabled { get; set; } = false;
+}
+
+public class ReceiptSections
+{
+    [JsonPropertyName("storeName")]
+    public ReceiptSectionConfig? StoreName { get; set; }
+
+    [JsonPropertyName("locationAddress")]
+    public ReceiptSectionConfig? LocationAddress { get; set; }
+
+    [JsonPropertyName("phoneNumber")]
+    public ReceiptSectionConfig? PhoneNumber { get; set; }
+
+    [JsonPropertyName("message")]
+    public ReceiptSectionConfig? Message { get; set; }
+
+    [JsonPropertyName("disclaimer")]
+    public ReceiptSectionConfig? Disclaimer { get; set; }
+
+    [JsonPropertyName("orderType")]
+    public ReceiptSectionConfig? OrderType { get; set; }
+
+    [JsonPropertyName("customerInfo")]
+    public ReceiptSectionConfig? CustomerInfo { get; set; }
+
+    [JsonPropertyName("orderNote")]
+    public ReceiptSectionConfig? OrderNote { get; set; }
 }
 
 public class OrderItem

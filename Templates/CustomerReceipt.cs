@@ -5,11 +5,21 @@ namespace rendezvous_companion.Templates;
 
 public static class CustomerReceipt
 {
+    // Helper: check if a section should appear in a specific position
+    // Falls back to default behavior if sections config is null
+    private static bool ShowInHeader(ReceiptSectionConfig? cfg, bool defaultVal = true)
+        => cfg == null ? defaultVal : (cfg.Header && !cfg.Disabled);
+
+    private static bool ShowInFooter(ReceiptSectionConfig? cfg, bool defaultVal = false)
+        => cfg == null ? defaultVal : (cfg.Footer && !cfg.Disabled);
+
+    private static bool IsDisabled(ReceiptSectionConfig? cfg)
+        => cfg?.Disabled == true;
+
     public static byte[] Build(Order order)
     {
-        var storeAddress = order.BusinessAddress;
-        var storeTel     = order.BusinessPhone;
-        var receiptMsg   = order.ReceiptMessage;
+        var sections   = order.Sections;
+        var receiptMsg = order.ReceiptMessage;
 
         // Convert UTC → local time for accurate timestamp
         var localDate = order.OrderDate.Kind == DateTimeKind.Utc
@@ -18,20 +28,38 @@ public static class CustomerReceipt
 
         var parts = new List<byte[]> { Initialize };
 
-        // REPRINT banner
+        // ── REPRINT banner ─────────────────────────────────────────
         if (order.IsReprint)
             parts.AddRange(new[] { AlignCenter, BoldOn, Line("REPRINT"), BoldOff });
 
-        // Business logo from settings
+        // ── HEADER ────────────────────────────────────────────────
+        parts.Add(AlignCenter);
+
+        // Business logo
         if (!string.IsNullOrEmpty(order.BusinessLogo))
             parts.Add(Base64Image(order.BusinessLogo));
 
-        if (!string.IsNullOrEmpty(storeAddress))
-            parts.Add(Line(storeAddress));
+        // Store name in header (default: shown in header)
+        if (ShowInHeader(sections?.StoreName))
+        {
+            parts.Add(BoldOn);
+            parts.Add(Line(order.BusinessName));
+            parts.Add(BoldOff);
+        }
 
-        if (!string.IsNullOrEmpty(storeTel))
-            parts.Add(Line($"Tel: {storeTel}"));
+        // Location address in header (default: shown in header)
+        if (ShowInHeader(sections?.LocationAddress) && !string.IsNullOrEmpty(order.BusinessAddress))
+            parts.Add(Line(order.BusinessAddress));
 
+        // Phone number (default: NOT in header — must be explicitly enabled)
+        if (ShowInHeader(sections?.PhoneNumber, false) && !string.IsNullOrEmpty(order.BusinessPhone))
+            parts.Add(Line($"Tel: {order.BusinessPhone}"));
+
+        // Receipt message in header only if explicitly set as header
+        if (ShowInHeader(sections?.Message, false) && !string.IsNullOrEmpty(receiptMsg))
+            parts.Add(Line(receiptMsg));
+
+        // ── ORDER Meta ─────────────────────────────────────────────
         parts.AddRange(new[]
         {
             NewLine,
@@ -41,15 +69,18 @@ public static class CustomerReceipt
             Line($"Date   : {localDate:MM/dd/yyyy h:mm tt}"),
         });
 
-        // Order type
-        var orderType = order.OrderType?.ToLower() switch
+        // Order type (if not disabled)
+        if (!IsDisabled(sections?.OrderType))
         {
-            "dine-in"  => "Dine-in",
-            "takeout"  => "Take Away",
-            "takeaway" => "Take Away",
-            _          => "Dine-in",
-        };
-        parts.Add(Line($"Type   : {orderType}"));
+            var orderType = order.OrderType?.ToLower() switch
+            {
+                "dine-in"  => "Dine-in",
+                "takeout"  => "Take Away",
+                "takeaway" => "Take Away",
+                _          => "Dine-in",
+            };
+            parts.Add(Line($"Type   : {orderType}"));
+        }
 
         if (!string.IsNullOrEmpty(order.TableNumber))
             parts.Add(Line($"Table  : {order.TableNumber}"));
@@ -57,13 +88,22 @@ public static class CustomerReceipt
         if (!string.IsNullOrEmpty(order.Cashier))
             parts.Add(Line($"Cashier: {order.Cashier}"));
 
-        // Only print customer name if present
-        if (!string.IsNullOrEmpty(order.CustomerName))
+        // Customer name (if not disabled via customerInfo section)
+        if (!IsDisabled(sections?.CustomerInfo) && !string.IsNullOrEmpty(order.CustomerName))
             parts.Add(Line($"Name   : {order.CustomerName}"));
+
+        // Order note in header (only if explicitly set to header position)
+        if (ShowInHeader(sections?.OrderNote, false) && !string.IsNullOrEmpty(order.OrderNote))
+        {
+            parts.Add(Divider());
+            parts.Add(BoldOn);
+            parts.Add(Line($"NOTE: {order.OrderNote}"));
+            parts.Add(BoldOff);
+        }
 
         parts.Add(Divider());
 
-        // Items
+        // ── ITEMS ─────────────────────────────────────────────────
         foreach (var item in order.Items)
         {
             var effectivePrice = item.HasDiscount ? item.Price * 0.8m : item.Price;
@@ -79,6 +119,7 @@ public static class CustomerReceipt
             }
         }
 
+        // ── TOTALS ─────────────────────────────────────────────────
         parts.AddRange(new[]
         {
             Divider(),
@@ -90,7 +131,7 @@ public static class CustomerReceipt
             Divider(),
         });
 
-        // Payment method
+        // ── PAYMENT METHOD ─────────────────────────────────────────
         var method = order.PaymentMethod?.ToLower() ?? "cash";
 
         if (method == "split" && order.SplitPayment != null)
@@ -127,21 +168,47 @@ public static class CustomerReceipt
 
         parts.Add(Divider());
 
+        // ── FOOTER ────────────────────────────────────────────────
         parts.Add(AlignCenter);
         parts.Add(NewLine);
-        
-        if (!string.IsNullOrEmpty(receiptMsg))
-            parts.Add(Line(receiptMsg));
-        else
+
+        // Order note in footer (default position for orderNote)
+        if (ShowInFooter(sections?.OrderNote, true) && !string.IsNullOrEmpty(order.OrderNote))
         {
+            parts.Add(BoldOn);
+            parts.Add(Line($"NOTE: {order.OrderNote}"));
+            parts.Add(BoldOff);
+        }
+
+        // Store name in footer (only if explicitly set to footer)
+        if (ShowInFooter(sections?.StoreName, false))
+        {
+            parts.Add(BoldOn);
+            parts.Add(Line(order.BusinessName));
+            parts.Add(BoldOff);
+        }
+
+        // Address in footer
+        if (ShowInFooter(sections?.LocationAddress, false) && !string.IsNullOrEmpty(order.BusinessAddress))
+            parts.Add(Line(order.BusinessAddress));
+
+        // Phone in footer
+        if (ShowInFooter(sections?.PhoneNumber, false) && !string.IsNullOrEmpty(order.BusinessPhone))
+            parts.Add(Line($"Tel: {order.BusinessPhone}"));
+
+        // Receipt message (default: footer)
+        if (ShowInFooter(sections?.Message, true) && !string.IsNullOrEmpty(receiptMsg))
+            parts.Add(Line(receiptMsg));
+        else if (sections == null)
+        {
+            // Fallback when no sections config at all
             parts.Add(Line("Thank you for dining with us!"));
             parts.Add(Line("Please come again :)"));
         }
 
-        if (!string.IsNullOrEmpty(order.Disclaimer))
-        {
+        // Disclaimer
+        if (!IsDisabled(sections?.Disclaimer) && !string.IsNullOrEmpty(order.Disclaimer))
             parts.Add(Line(order.Disclaimer));
-        }
 
         parts.Add(NewLine);
         parts.Add(FeedLines3);
